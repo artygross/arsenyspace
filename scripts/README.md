@@ -4,8 +4,9 @@
 он нужен только для ручной проверки и утяжелил бы установку.
 
 ```bash
-# один раз
-npm install -g playwright && npx playwright install --with-deps chromium
+# один раз: Playwright нужен как зависимость проекта — при глобальной установке
+# node не сможет разрешить импорт `playwright` из scripts/
+pnpm add -D playwright && npx playwright install --with-deps chromium
 
 # приложение должно быть запущено
 pnpm build && pnpm start
@@ -13,6 +14,12 @@ pnpm build && pnpm start
 # проверки (BASE_URL по умолчанию http://localhost:3000)
 node scripts/visual-check.mjs   # 17 страниц × 2 брейкпоинта
 node scripts/flow-check.mjs     # 27 интерактивных сценариев
+
+# по живому сайту
+BASE_URL=https://optika-store.netlify.app node scripts/visual-check.mjs
+
+# после проверки, если Playwright больше не нужен
+pnpm remove playwright
 ```
 
 **`visual-check.mjs`** снимает скриншоты в `.screenshots/` и проверяет на каждой странице:

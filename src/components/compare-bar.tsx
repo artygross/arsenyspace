@@ -22,7 +22,13 @@ export function CompareBar() {
       <div aria-hidden="true" className="h-20" />
 
       <div className="border-line bg-surface fixed inset-x-0 bottom-0 z-40 border-t shadow-[0_-2px_16px_rgba(0,0,0,0.06)]">
-        <div className="shell flex items-center gap-4 py-3">
+        {/*
+          Правый нижний угол занимают виджеты чатов, куки-баннеры и бейджи хостинга
+          (у Netlify — «Powered by Netlify» с z-index 2147483645). Держать там главную
+          кнопку нельзя: на десктопе уводим её от края отступом, на мобильном меняем
+          порядок местами, чтобы действие оказалось слева, а не под виджетом.
+        */}
+        <div className="shell flex items-center gap-4 py-3 max-sm:flex-row-reverse sm:pr-56">
           <div className="flex min-w-0 flex-1 items-center gap-2.5 overflow-x-auto">
             {products.map((p) => (
               <div key={p.slug} className="relative shrink-0">
