@@ -84,6 +84,7 @@ Netlify собирает проект своим OpenNext-адаптером, к
 | [05-ui-system](Test/docs/05-ui-system.md) | Токены, компоненты, правила поведения интерфейса |
 | [06-design-execution](Test/docs/06-design-execution.md) | Что реализовано и что нашла проверка в браузере |
 | [07-handoff](Test/docs/07-handoff.md) | Точки подключения данных, деплой, чек-лист запуска |
+| [08-deploy-netlify](Test/docs/08-deploy-netlify.md) | Пошаговая выкладка на Netlify |
 
 ## Чего нет
 
