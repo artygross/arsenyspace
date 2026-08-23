@@ -41,17 +41,27 @@ await input.press("Enter");
 await page.waitForURL(/\/catalog|\/search/);
 ok("выбор подсказки ведёт на выдачу", true, new URL(page.url()).pathname + new URL(page.url()).search);
 
-// 3. Фильтр каталога пишется в URL и «назад» работает
+// 3. Фильтр каталога пишется в URL и «назад» работает.
+// Ждём фактическую смену числа, а не таймер: на серверных функциях
+// применение фасета занимает около секунды против мгновенного локально.
+const counter = page.locator("section p span.font-medium").first();
+const untilChanged = (prev) =>
+  page.waitForFunction(
+    (p) => document.querySelector("section p span.font-medium")?.textContent !== p,
+    prev,
+    { timeout: 20000 },
+  );
+
 await page.goto(BASE + "/catalog");
-const before = await page.locator("section p span.font-medium").first().innerText();
-await page.getByRole("checkbox", { name: /Meridian/ }).check();
-await page.waitForTimeout(600);
-const after = await page.locator("section p span.font-medium").first().innerText();
+const before = await counter.innerText();
+await page.getByRole("checkbox", { name: /Meridian/ }).click();
+await untilChanged(before);
+const after = await counter.innerText();
 ok("фасет меняет выдачу", before !== after, `${before} → ${after}`);
 ok("фасет попал в URL", page.url().includes("brand=Meridian"));
 await page.goBack();
-await page.waitForTimeout(600);
-const back = await page.locator("section p span.font-medium").first().innerText();
+await untilChanged(after);
+const back = await counter.innerText();
 ok("кнопка «назад» возвращает выдачу", back === before, `${after} → ${back}`);
 
 // 4. Сравнение: чекбокс на карточке → панель → страница
