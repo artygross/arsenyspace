@@ -1,7 +1,7 @@
 /** Тексты сайта. Согласованы в Seedlings/docs/10-copy.md — правки вносятся там же. */
 
 export const COMPANY = {
-  name: "Своя грядка",
+  name: "Полесье",
   /**
    * Логотип клиента. Положите файл в `public/` и укажите путь — тогда знак и подпись
    * в шапке, футере и накладной заменятся на него. `null` — рисуется временный знак
@@ -10,10 +10,10 @@ export const COMPANY = {
   logo: null as string | null,
   /** Показывать ли название текстом рядом со знаком */
   logoWithWordmark: true,
-  legal: "ИП Реквизиты уточняются",
+  legal: "КФХ Полесье",
   phone: "+7 (4872) 00-00-00",
   phoneHref: "tel:+74872000000",
-  email: "zakaz@svoya-gryadka.example",
+  email: "zakaz@polesie.example",
   vk: "https://vk.ru/kupit_sazhentsy_maliny_klubniki",
   since: 2014,
   years: 12,

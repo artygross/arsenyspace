@@ -19,10 +19,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://svoya-gryadka.example"),
+  metadataBase: new URL("https://polesie.example"),
   title: {
-    default: "Своя грядка — рассада и саженцы из своего питомника",
-    template: "%s · Своя грядка",
+    default: "Полесье — рассада и саженцы из своего питомника",
+    template: "%s · Полесье",
   },
   description:
     "Рассада клубники, саженцы малины, смородины, крыжовника и жимолости из собственного питомника. Закрытая корневая система, гарантия приживаемости 14 дней, доставка по России и самовывоз.",

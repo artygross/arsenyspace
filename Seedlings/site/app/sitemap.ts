@@ -3,7 +3,7 @@ import { CULTURES, getProducts } from "@/lib/catalog";
 import { COLLECTIONS } from "@/lib/collections";
 import { ARTICLES } from "@/lib/articles";
 
-const BASE = "https://svoya-gryadka.example";
+const BASE = "https://polesie.example";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const statics = ["", "/catalog", "/sale", "/delivery", "/guarantee", "/care", "/about"].map((path) => ({

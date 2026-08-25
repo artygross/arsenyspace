@@ -3,7 +3,7 @@ import { COMPANY } from "@/lib/content";
 import { PICKUP } from "@/lib/delivery";
 import type { Article } from "@/lib/articles";
 
-const SITE = "https://svoya-gryadka.example";
+const SITE = "https://polesie.example";
 
 /**
  * Микроразметка. Рекомендация Next: рендерить JSON-LD тегом <script> прямо на странице,

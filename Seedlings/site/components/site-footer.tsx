@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CULTURES } from "@/lib/catalog";
 import { COLLECTIONS } from "@/lib/collections";
+import { COMPANY } from "@/lib/content";
 import { PICKUP } from "@/lib/delivery";
 import { IconPhone, IconPin } from "./icons";
 import { Logo } from "./logo";
@@ -95,7 +96,7 @@ export function SiteFooter() {
 
       <div className="border-line border-t">
         <div className="shell text-ink-muted flex flex-wrap justify-between gap-3 py-5 text-xs">
-          <p>© 2026 «Своя грядка». Реквизиты подставляются после ответов клиента (docs/09-questions.md).</p>
+          <p>© 2026 {COMPANY.legal}. Реквизиты подставляются после ответов клиента (docs/09-questions.md).</p>
           <p>
             Демонстрационный прототип: цены, остатки и отзывы вымышлены. Индексация закрыта.
           </p>

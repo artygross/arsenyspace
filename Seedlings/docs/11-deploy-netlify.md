@@ -12,6 +12,19 @@
 | Проект | `svoya-gryadka-demo`, команда `artygross`, план Free |
 | Способ | Прод-деплой из CLI: `netlify deploy --prod --build --filter seedlings-site` |
 | Состояние | Сборка `ready`, одна серверная функция (SSR-обработчик Next) |
+| Бейдж Netlify | Отключён (`built_with_badge_enabled: false`) |
+
+Плавающая плашка «Powered by Netlify» занимает 194×64 px в правом нижнем углу и перехватывает
+клики: на мобильном она накрывала половину полосы сравнения. Отключается только через API
+и только с телом запроса, вложенным в `body` — плоский payload сервер молча игнорирует:
+
+```bash
+netlify api updateSite --data '{"site_id":"<id>","body":{"built_with_badge_enabled":false}}'
+```
+
+Имя проекта осталось `svoya-gryadka-demo` от рабочего названия. Переименование —
+`netlify api updateSite --data '{"site_id":"<id>","body":{"name":"polesie-demo"}}'`,
+но прежний адрес после этого перестаёт открываться.
 
 **Доступ к сайту закрыт настройкой команды.** В аккаунте включено `site_sso_login` — Netlify
 требует вход в свою учётную запись для просмотра любого сайта команды, поэтому посторонний

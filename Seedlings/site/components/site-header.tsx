@@ -7,6 +7,7 @@ import { CULTURES, countByCulture, getProducts } from "@/lib/catalog";
 import { COLLECTIONS } from "@/lib/collections";
 import { useCartLines } from "@/lib/cart";
 import { useFavorites } from "@/lib/wishlist";
+import { COMPANY } from "@/lib/content";
 import { plural } from "@/lib/format";
 import { IconCart, IconClose, IconHeart, IconMenu, IconSearch, IconUser } from "./icons";
 import { Logo } from "./logo";
@@ -56,7 +57,7 @@ export function SiteHeader() {
           <IconMenu className="size-6" />
         </button>
 
-        <Link href="/" className="flex items-center gap-2" aria-label="Своя грядка — на главную">
+        <Link href="/" className="flex items-center gap-2" aria-label={`${COMPANY.name} — на главную`}>
           <Logo className="h-8 w-auto lg:h-9" />
         </Link>
 
