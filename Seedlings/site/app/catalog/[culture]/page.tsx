@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CatalogView } from "@/components/catalog-view";
+import { BreadcrumbsLd, ItemListLd } from "@/components/structured-data";
 import { CULTURES, CULTURE_BY_SLUG, countByCulture } from "@/lib/catalog";
 import { parseQuery, runQuery } from "@/lib/query";
 
@@ -33,7 +34,16 @@ export default async function CulturePage(props: PageProps<"/catalog/[culture]">
   const counts = countByCulture();
 
   return (
-    <CatalogView
+    <>
+      <ItemListLd products={result.items} path={`/catalog/${meta.slug}`} />
+      <BreadcrumbsLd
+        items={[
+          { href: "/", label: "Главная" },
+          { href: "/catalog", label: "Каталог" },
+          { href: `/catalog/${meta.slug}`, label: meta.name },
+        ]}
+      />
+      <CatalogView
       title={`${meta.name}: ${counts[meta.key]} сортов`}
       lead={meta.lead}
       seo={meta.seo}
@@ -42,6 +52,7 @@ export default async function CulturePage(props: PageProps<"/catalog/[culture]">
       culture={meta}
       basePath={`/catalog/${meta.slug}`}
       crumbs={[{ href: "/", label: "Главная" }, { href: "/catalog", label: "Каталог" }, { label: meta.name }]}
-    />
+      />
+    </>
   );
 }

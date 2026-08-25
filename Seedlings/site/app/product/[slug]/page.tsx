@@ -5,6 +5,7 @@ import { ProductPurchase } from "@/components/product-purchase";
 import { ProductReviews } from "@/components/product-reviews";
 import { ProductGrid } from "@/components/product-card";
 import { Badge, Breadcrumbs, Rating, SectionHeading, TrustBlock, productBadges } from "@/components/ui";
+import { BreadcrumbsLd, ProductLd } from "@/components/structured-data";
 import { IconClock, IconPin, IconShield, IconSnow, IconSun, IconTruck } from "@/components/icons";
 import {
   CULTURE_BY_KEY,
@@ -61,6 +62,15 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
 
   return (
     <div className="shell pb-16">
+      <ProductLd product={product} />
+      <BreadcrumbsLd
+        items={[
+          { href: "/", label: "Главная" },
+          { href: "/catalog", label: "Каталог" },
+          { href: `/catalog/${culture.slug}`, label: culture.name },
+          { href: `/product/${product.slug}`, label: product.name },
+        ]}
+      />
       <Breadcrumbs
         items={[
           { href: "/", label: "Главная" },

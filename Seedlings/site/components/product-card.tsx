@@ -9,6 +9,7 @@ import {
 } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
 import { AddToCartButton, FavoriteButton } from "./add-to-cart";
+import { CompareToggle } from "./compare-toggle";
 import { PlantArt } from "./plant-art";
 import { Badge, Price, productBadges } from "./ui";
 
@@ -64,8 +65,9 @@ export function ProductCard({ product }: { product: Product }) {
           {shipsLabel(product)}
         </p>
 
-        <div className="relative z-20 mt-4">
+        <div className="relative z-20 mt-auto pt-4">
           <AddToCartButton product={product} className="w-full" />
+          <CompareToggle slug={product.slug} className="mt-2 w-full justify-center" />
         </div>
       </div>
     </article>

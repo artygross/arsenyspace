@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs, ButtonLink, SectionHeading } from "@/components/ui";
-import { CARE_ARTICLES } from "@/lib/content";
+import { ARTICLES } from "@/lib/articles";
 import { CULTURES, MONTHS_IN } from "@/lib/catalog";
 
 export const metadata: Metadata = {
@@ -46,12 +46,16 @@ export default function CarePage() {
       </section>
 
       <section className="mt-12">
-        <SectionHeading title="Разборы" text="Материалы второй волны: каждый станет отдельной страницей под поисковый трафик." />
+        <SectionHeading title="Разборы" text="Пошаговые инструкции по частым вопросам — с ссылкой на сорта, о которых идёт речь." />
         <div className="grid gap-4 md:grid-cols-3">
-          {CARE_ARTICLES.map((a) => (
-            <article key={a.slug} className="card-surface p-5">
+          {ARTICLES.map((a) => (
+            <article key={a.slug} className="card-surface hover:border-leaf p-5 transition-colors">
               <p className="eyebrow">{a.minutes} мин чтения</p>
-              <h2 className="font-display mt-2 text-lg font-bold">{a.title}</h2>
+              <h2 className="font-display mt-2 text-lg font-bold">
+                <Link href={`/care/${a.slug}`} className="hover:text-leaf">
+                  {a.title}
+                </Link>
+              </h2>
               <p className="text-ink-muted mt-2 text-sm leading-relaxed">{a.excerpt}</p>
             </article>
           ))}

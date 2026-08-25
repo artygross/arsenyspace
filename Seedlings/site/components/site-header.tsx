@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CULTURES, countByCulture, getProducts } from "@/lib/catalog";
+import { COLLECTIONS } from "@/lib/collections";
 import { useCartLines } from "@/lib/cart";
 import { useFavorites } from "@/lib/wishlist";
 import { plural } from "@/lib/format";
@@ -74,7 +75,8 @@ export function SiteHeader() {
               Каталог
             </button>
             {catalogOpen && (
-              <div className="card-surface shadow-lift absolute top-full left-0 w-[520px] p-3">
+              <div className="card-surface shadow-lift absolute top-full left-0 grid w-[760px] grid-cols-[1fr_260px] gap-4 p-3">
+                <div>
                 <ul className="grid grid-cols-2 gap-1">
                   {CULTURES.map((c) => (
                     <li key={c.key}>
@@ -94,6 +96,20 @@ export function SiteHeader() {
                 >
                   Весь каталог — {getProducts().length} сортов →
                 </Link>
+                </div>
+
+                <div className="bg-leaf-soft/50 rounded-2xl p-3">
+                  <p className="eyebrow mb-2 px-1">Подборки</p>
+                  <ul className="grid gap-0.5">
+                    {COLLECTIONS.map((c) => (
+                      <li key={c.slug}>
+                        <Link href={`/collection/${c.slug}`} className="hover:bg-surface block rounded-xl px-2 py-2 text-sm">
+                          {c.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             )}
           </div>
@@ -177,6 +193,18 @@ function MobileMenu({ onClose, counts }: { onClose: () => void; counts: Record<s
             </li>
           ))}
         </ul>
+        <p className="eyebrow mt-6 mb-3">Подборки</p>
+        <ul className="grid gap-2">
+          {COLLECTIONS.map((c) => (
+            <li key={c.slug}>
+              <Link href={`/collection/${c.slug}`} className="card-surface block px-4 py-3">
+                <span className="font-medium">{c.title}</span>
+                <span className="text-ink-muted mt-0.5 block text-sm">{c.promise}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+
         <ul className="mt-6 grid gap-1">
           {[{ href: "/catalog", label: "Весь каталог" }, ...NAV, { href: "/account", label: "Личный кабинет" }].map(
             (item) => (

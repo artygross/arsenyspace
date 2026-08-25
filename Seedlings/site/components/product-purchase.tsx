@@ -12,6 +12,7 @@ import {
 import { addToCart } from "@/lib/cart";
 import { formatPrice, plural } from "@/lib/format";
 import { FavoriteButton } from "./add-to-cart";
+import { CompareToggle } from "./compare-toggle";
 import { Button, Price } from "./ui";
 import { IconCheck, IconMinus, IconPlus } from "./icons";
 
@@ -139,7 +140,12 @@ export function ProductPurchase({ product }: { product: Product }) {
 
       {disabled && <NotifyForm product={product} />}
 
-      <p className="text-ink-muted mt-4 text-sm">{packLabel(product)} · вес {product.weight.toFixed(1)} кг</p>
+      <div className="border-line mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+        <p className="text-ink-muted text-sm">
+          {packLabel(product)} · вес {product.weight.toFixed(1)} кг
+        </p>
+        <CompareToggle slug={product.slug} />
+      </div>
     </div>
   );
 }

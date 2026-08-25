@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CULTURES } from "@/lib/catalog";
+import { COLLECTIONS } from "@/lib/collections";
 import { PICKUP } from "@/lib/delivery";
 import { IconPhone, IconPin } from "./icons";
 import { Logo } from "./logo";
@@ -11,12 +12,13 @@ const HELP = [
   { href: "/sale", label: "Акции и промокоды" },
   { href: "/about", label: "О питомнике" },
   { href: "/account", label: "Личный кабинет" },
+  { href: "/compare", label: "Сравнение сортов" },
 ];
 
 export function SiteFooter() {
   return (
     <footer className="bg-surface border-line mt-16 border-t no-print">
-      <div className="shell grid gap-10 py-12 lg:grid-cols-4">
+      <div className="shell grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-5">
         <div>
           <Logo className="h-9 w-auto" />
           <p className="text-ink-muted mt-4 text-sm leading-relaxed">
@@ -38,6 +40,19 @@ export function SiteFooter() {
               <li key={c.key}>
                 <Link href={`/catalog/${c.slug}`} className="hover:text-leaf">
                   {c.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <nav aria-label="Подборки">
+          <h2 className="eyebrow mb-3">Подборки</h2>
+          <ul className="grid gap-2 text-sm">
+            {COLLECTIONS.map((c) => (
+              <li key={c.slug}>
+                <Link href={`/collection/${c.slug}`} className="hover:text-leaf">
+                  {c.title}
                 </Link>
               </li>
             ))}

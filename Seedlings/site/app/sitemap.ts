@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 import { CULTURES, getProducts } from "@/lib/catalog";
+import { COLLECTIONS } from "@/lib/collections";
+import { ARTICLES } from "@/lib/articles";
 
 const BASE = "https://svoya-gryadka.example";
 
@@ -22,5 +24,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...statics, ...cultures, ...products];
+  const collections = COLLECTIONS.map((c) => ({
+    url: `${BASE}/collection/${c.slug}`,
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
+  const articles = ARTICLES.map((a) => ({
+    url: `${BASE}/care/${a.slug}`,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
+  return [...statics, ...cultures, ...collections, ...products, ...articles];
 }

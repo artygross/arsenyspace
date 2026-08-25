@@ -440,8 +440,15 @@ function describe(raw: Raw, culture: Culture): string {
     raw.hardiness < 0
       ? `Зимостойкость до ${raw.hardiness} °C — сорт проверен на наших полях в средней полосе.`
       : "Культура теплолюбивая: высаживается после возвратных заморозков, при температуре почвы от +15 °C.";
+  // Подтип авторский и уже согласован с названием культуры: «клубника — садовая»,
+  // «крыжовник — бесшипный», «овощная рассада — томат». Собирать через родительный падеж нельзя.
+  // Если подтип уже назвал срок («ремонтантная»), второй раз про него не пишем.
+  const kind = raw.kind.toLowerCase();
+  const duplicate = kind.startsWith(RIPENING_LABEL[raw.ripening].toLowerCase().slice(0, 7));
   return [
-    `«${raw.name}» — ${raw.kind.toLowerCase()} ${c.genitive}, ${ripe}. ${raw.short}.`,
+    duplicate
+      ? `${c.name} «${raw.name}» — ${kind}. ${raw.short}.`
+      : `${c.name} «${raw.name}» — ${kind}, ${ripe}. ${raw.short}.`,
     `Урожайность ${raw.yieldPerBush} с растения, размер плода ${raw.fruitSize}, высота взрослого растения ${raw.height}.`,
     winter,
     `Мы выращиваем этот сорт сами: маточник заложен из проверенного посадочного материала, каждое растение отбирается вручную перед отгрузкой. Растения едут ${CONTAINER_HINT[raw.container].toLowerCase()}.`,
@@ -527,7 +534,10 @@ export function packLabel(p: Product): string {
 
 /** Ключевая характеристика строкой — для карточки в сетке */
 export function keyTrait(p: Product): string {
-  const parts = [p.kind, RIPENING_LABEL[p.ripening].toLowerCase()];
+  const parts = [p.kind];
+  const ripening = RIPENING_LABEL[p.ripening].toLowerCase();
+  // «Ремонтантная · ремонтантный» — тип и срок совпадают, второе слово лишнее
+  if (!p.kind.toLowerCase().startsWith(ripening.slice(0, 7))) parts.push(ripening);
   if (p.hardiness < 0) parts.push(`до ${p.hardiness} °C`);
   return parts.join(" · ");
 }

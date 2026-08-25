@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Breadcrumbs, ButtonLink, Faq, SectionHeading, TrustBlock } from "@/components/ui";
 import { IconBox, IconClock, IconPin, IconSnow, IconTruck } from "@/components/icons";
 import { DELIVERY_STEPS, FAQ_ITEMS } from "@/lib/content";
+import { FaqLd } from "@/components/structured-data";
 import { FREE_FROM, PICKUP, ZONES } from "@/lib/delivery";
 import { formatPrice } from "@/lib/format";
 
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 export default function DeliveryPage() {
   return (
     <div className="shell pb-16">
+      <FaqLd items={FAQ_ITEMS} />
       <Breadcrumbs items={[{ href: "/", label: "Главная" }, { label: "Доставка" }]} />
       <h1 className="font-display text-3xl leading-tight font-bold lg:text-4xl">
         Доставка живых растений

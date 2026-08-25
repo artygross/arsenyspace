@@ -8,7 +8,7 @@ pnpm dev:seedlings     # http://localhost:3210
 pnpm build:seedlings
 pnpm lint:seedlings
 pnpm start:seedlings   # и в другом терминале:
-pnpm check:seedlings   # вёрстка (18 маршрутов × 2 брейкпоинта) + 26 сценариев в браузере
+pnpm check:seedlings   # вёрстка (21 маршрут × 2 брейкпоинта) + 36 сценариев в браузере
 ```
 
 | Папка | Что внутри |

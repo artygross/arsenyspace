@@ -132,7 +132,55 @@ await page.waitForTimeout(150);
 const priceAfter = await page.getByTestId("pdp-price").innerText();
 ok("выбор фасовки пересчитывает цену", priceBefore !== priceAfter, `${priceBefore} → ${priceAfter}`);
 
-/* ---------- 12. Мобильное меню ---------- */
+
+/* ---------- 13. Сравнение сортов ---------- */
+await page.goto(BASE + "/catalog/klubnika");
+const compareButtons = page.getByRole("button", { name: "Сравнить" });
+await compareButtons.nth(0).click();
+await compareButtons.nth(0).click();
+await page.waitForTimeout(200);
+ok("полоса сравнения появляется", await page.getByRole("link", { name: "Сравнить" }).isVisible());
+await page.getByRole("link", { name: "Сравнить" }).click();
+await page.waitForURL("**/compare**");
+const columns = await page.locator("thead th").count();
+ok("в таблице сравнения две колонки сортов", columns === 3, `колонок с подписью: ${columns - 1}`);
+const rowsAll = await page.locator("tbody tr").count();
+await page.getByText("Только отличия").click();
+await page.waitForTimeout(150);
+const rowsDiff = await page.locator("tbody tr").count();
+ok("режим «только отличия» скрывает совпадающие строки", rowsDiff < rowsAll, `${rowsAll} → ${rowsDiff}`);
+ok("состав сравнения зашит в адрес страницы", page.url().includes("items="));
+await page.screenshot({ path: `${OUT}/flow-compare.png`, fullPage: true });
+await page.getByRole("button", { name: "Очистить сравнение" }).click();
+await page.waitForTimeout(150);
+ok("сравнение очищается", await page.getByText("Сравнивать пока нечего").isVisible());
+
+/* ---------- 14. Подборка одной кнопкой ---------- */
+await page.goto(BASE + "/collection/klubnika-na-vsyo-leto");
+const collectionItems = await page.locator("ol > li").count();
+await page.getByRole("button", { name: "Взять всю подборку" }).click();
+await page.waitForTimeout(300);
+const cartBadge = await page.locator("header a[href='/cart'] span").innerText();
+ok("подборка кладётся в корзину одной кнопкой", Number(cartBadge) >= collectionItems, `в корзине ${cartBadge}, в подборке ${collectionItems}`);
+
+/* ---------- 15. Статья и перелинковка ---------- */
+await page.goto(BASE + "/care");
+await page.getByRole("link", { name: "Обрезка ремонтантной малины" }).click();
+await page.waitForURL("**/care/obrezka-remontantnoy-maliny");
+ok("статья открывается", (await page.locator("h1").innerText()).includes("Обрезка"));
+await page.getByRole("link", { name: "Смотреть сорта малины" }).click();
+await page.waitForURL("**/catalog/malina");
+ok("из статьи есть путь в каталог культуры", page.url().endsWith("/catalog/malina"));
+
+/* ---------- 16. Микроразметка ---------- */
+await page.goto(BASE + "/product/klubnika-polka");
+const ld = await page.locator('script[type="application/ld+json"]').allTextContents();
+const types = ld.map((raw) => JSON.parse(raw)["@type"]);
+ok("на карточке есть разметка Product и BreadcrumbList", types.includes("Product") && types.includes("BreadcrumbList"), types.join(", "));
+const productLd = JSON.parse(ld[types.indexOf("Product")]);
+ok("в разметке указаны цена и наличие", productLd.offers?.price > 0 && String(productLd.offers?.availability).includes("schema.org"));
+
+/* ---------- 17. Мобильное меню ---------- */
 const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "ru-RU" });
 const mpage = await mobile.newPage();
 mpage.on("pageerror", (e) => pageErrors.push(e.message));

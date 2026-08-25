@@ -3,6 +3,7 @@ import { PlantArt, LeafMark } from "@/components/plant-art";
 import { ProductGrid } from "@/components/product-card";
 import { SubscribeForm } from "@/components/subscribe-form";
 import { ButtonLink, Faq, Rating, SectionHeading, TrustBlock } from "@/components/ui";
+import { FaqLd, OrganizationLd } from "@/components/structured-data";
 import { IconBox, IconClock, IconPin, IconTruck } from "@/components/icons";
 import {
   CULTURES,
@@ -12,7 +13,9 @@ import {
   hits,
   seasonalPicks,
 } from "@/lib/catalog";
-import { ADVANTAGES, CARE_ARTICLES, DELIVERY_STEPS, FAQ_ITEMS, REVIEWS_HOME } from "@/lib/content";
+import { ADVANTAGES, DELIVERY_STEPS, FAQ_ITEMS, REVIEWS_HOME } from "@/lib/content";
+import { ARTICLES } from "@/lib/articles";
+import { COLLECTIONS, collectionItems } from "@/lib/collections";
 import { FREE_FROM, PICKUP, ZONES } from "@/lib/delivery";
 import { formatPrice } from "@/lib/format";
 
@@ -25,6 +28,9 @@ export default function HomePage() {
 
   return (
     <>
+      <OrganizationLd />
+      <FaqLd items={FAQ_ITEMS} />
+
       {/* 1. Первый экран */}
       <section className="bg-sand/60">
         <div className="shell grid items-center gap-8 py-10 lg:grid-cols-[1.1fr_.9fr] lg:py-16">
@@ -122,6 +128,42 @@ export default function HomePage() {
           action={{ href: "/catalog?sort=popular", label: "Смотреть все" }}
         />
         <ProductGrid products={bestsellers} />
+      </section>
+
+      {/* 4a. Готовые подборки */}
+      <section className="shell pb-4">
+        <SectionHeading
+          eyebrow="Готовые решения"
+          title="Не знаете, с чего начать"
+          text="Подборки собраны под задачу, а не под культуру: их берут одной кнопкой и правят состав уже в корзине."
+        />
+        <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {COLLECTIONS.map((c) => {
+            const items = collectionItems(c);
+            const sum = items
+              .filter((p) => p.availability !== "out_of_season")
+              .reduce((s, p) => s + p.price, 0);
+            return (
+              <li key={c.slug}>
+                <Link
+                  href={`/collection/${c.slug}`}
+                  className="card-surface hover:shadow-lift flex h-full flex-col p-5 transition-all hover:-translate-y-0.5"
+                >
+                  <div className="bg-leaf-soft -mx-2 -mt-2 mb-3 flex gap-1 rounded-2xl px-2 py-1">
+                    {items.slice(0, 3).map((p) => (
+                      <PlantArt key={p.slug} product={p} className="h-20 w-1/3" decorative />
+                    ))}
+                  </div>
+                  <p className="font-display text-lg font-bold">{c.title}</p>
+                  <p className="text-ink-muted mt-1 flex-1 text-sm leading-relaxed">{c.promise}</p>
+                  <p className="text-leaf mt-3 text-sm font-medium">
+                    {items.length} {items.length === 1 ? "сорт" : items.length < 5 ? "сорта" : "сортов"} · от {formatPrice(sum)}
+                  </p>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </section>
 
       {/* 5. Преимущества */}
@@ -256,8 +298,8 @@ export default function HomePage() {
           action={{ href: "/care", label: "Все материалы" }}
         />
         <div className="grid gap-4 md:grid-cols-3">
-          {CARE_ARTICLES.map((a) => (
-            <Link key={a.slug} href="/care" className="card-surface hover:shadow-lift p-5 transition-shadow">
+          {ARTICLES.map((a) => (
+            <Link key={a.slug} href={`/care/${a.slug}`} className="card-surface hover:shadow-lift p-5 transition-shadow">
               <p className="eyebrow">{a.minutes} мин чтения</p>
               <h3 className="font-display mt-2 text-lg font-bold">{a.title}</h3>
               <p className="text-ink-muted mt-2 text-sm leading-relaxed">{a.excerpt}</p>

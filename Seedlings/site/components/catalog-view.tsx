@@ -100,7 +100,7 @@ export function CatalogView({
 
       {seo && (
         <section className="mt-12 max-w-3xl">
-          <SectionHeading title={`О ${culture ? culture.genitive : "нашем каталоге"}`} />
+          <SectionHeading title={culture ? `${culture.name}: что важно знать` : "О нашем каталоге"} />
           <p className="text-ink-muted leading-relaxed">{seo}</p>
         </section>
       )}
