@@ -14,6 +14,15 @@ const results = [];
 const ok = (name, condition, detail = "") =>
   results.push({ name, condition: Boolean(condition), detail });
 
+/**
+ * Ждём факт, а не таймер: корзина, избранное и заказы читаются из localStorage после
+ * гидрации, и мгновенный замер под нагрузкой врёт в обе стороны. Ожидание с перехватом —
+ * несбывшийся сценарий должен попасть в отчёт, а не уронить прогон.
+ */
+const WAIT = 10_000;
+const settle = (locator, opts = {}) => locator.waitFor({ timeout: WAIT, ...opts }).catch(() => {});
+const settleFor = (fn, arg) => page.waitForFunction(fn, arg, { timeout: WAIT }).catch(() => {});
+
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: "ru-RU", reducedMotion: "reduce" });
 const page = await ctx.newPage();
@@ -45,8 +54,8 @@ ok("чипс снимает фильтр", !page.url().includes("ripening"));
 await page.getByRole("button", { name: "Поиск по каталогу" }).click();
 const searchInput = page.getByLabel("Поисковый запрос");
 await searchInput.fill("полка");
-await page.waitForTimeout(200);
 const suggestion = page.locator("a", { hasText: "Полка" }).first();
+await settle(suggestion);
 ok("автокомплит показывает подсказки", await suggestion.isVisible());
 await searchInput.press("Enter");
 await page.waitForURL("**/search?q=**");
@@ -55,10 +64,13 @@ ok("поиск открывает страницу результатов", (awa
 /* ---------- 5. Избранное ---------- */
 await page.goto(BASE + "/catalog/klubnika");
 await page.getByRole("button", { name: "В избранное" }).first().click();
-await page.waitForTimeout(150);
-ok("счётчик избранного в шапке обновился", (await page.locator("header").getByText("1", { exact: true }).count()) > 0);
+const favBadge = page.locator("header a[href='/favorites'] span");
+await settle(favBadge.filter({ hasText: "1" }));
+ok("счётчик избранного в шапке обновился", (await favBadge.count()) > 0);
 await page.goto(BASE + "/favorites");
-ok("избранное сохранилось между страницами", (await page.locator("article").count()) === 1);
+const favCards = page.locator("main article");
+await settle(favCards.first());
+ok("избранное сохранилось между страницами", (await favCards.count()) === 1);
 
 /* ---------- 6. Корзина и промокод ---------- */
 await page.goto(BASE + "/catalog/klubnika");
@@ -103,7 +115,8 @@ await page.getByRole("button", { name: "Оформить заказ" }).click();
 await page.waitForURL("**/checkout/success**");
 const orderHeading = await page.locator("h1").innerText();
 ok("заказ оформляется и получает номер", /Заказ СГ-\d+ принят/.test(orderHeading), orderHeading);
-ok("корзина очищается после заказа", (await page.locator("header").getByText("3", { exact: true }).count()) === 0);
+await settle(cartBadge, { state: "detached" });
+ok("корзина очищается после заказа", (await cartBadge.count()) === 0);
 
 /* ---------- 8. Накладная ---------- */
 await page.getByRole("link", { name: /Открыть накладную/ }).click();
@@ -114,10 +127,12 @@ await page.screenshot({ path: `${OUT}/flow-invoice.png`, fullPage: true });
 
 /* ---------- 9. Кабинет и повтор заказа ---------- */
 await page.goto(BASE + "/account");
-ok("заказ виден в кабинете", (await page.getByText(/Заказ СГ-\d+/).count()) > 0);
+const orderRow = page.getByText(/Заказ СГ-\d+/);
+await settle(orderRow.first());
+ok("заказ виден в кабинете", (await orderRow.count()) > 0);
 await page.getByRole("button", { name: "Повторить заказ" }).click();
-await page.waitForTimeout(200);
-ok("повтор заказа кладёт позиции в корзину", (await page.locator("header").getByText("3", { exact: true }).count()) > 0);
+await settle(cartBadge.filter({ hasText: "3" }));
+ok("повтор заказа кладёт позиции в корзину", (await cartBadge.count()) > 0 && (await cartBadge.innerText()) === "3");
 
 /* ---------- 10. Несезонный товар ---------- */
 await page.goto(BASE + "/product/ovoshchnaya-rassada-byche-serdtse");
@@ -131,7 +146,7 @@ ok("подписка на поступление подтверждается", 
 await page.goto(BASE + "/product/klubnika-polka");
 const priceBefore = await page.getByTestId("pdp-price").innerText();
 await page.locator('input[name="variant"]').nth(1).check();
-await page.waitForTimeout(150);
+await settleFor((before) => document.querySelector('[data-testid="pdp-price"]')?.textContent !== before, priceBefore);
 const priceAfter = await page.getByTestId("pdp-price").innerText();
 ok("выбор фасовки пересчитывает цену", priceBefore !== priceAfter, `${priceBefore} → ${priceAfter}`);
 
@@ -156,7 +171,7 @@ const columns = await page.locator("thead th").count();
 ok("в таблице сравнения две колонки сортов", columns === 3, `колонок с подписью: ${columns - 1}`);
 const rowsAll = await page.locator("tbody tr").count();
 await page.getByText("Только отличия").click();
-await page.waitForTimeout(150);
+await settleFor((before) => document.querySelectorAll("tbody tr").length !== before, rowsAll);
 const rowsDiff = await page.locator("tbody tr").count();
 ok("режим «только отличия» скрывает совпадающие строки", rowsDiff < rowsAll, `${rowsAll} → ${rowsDiff}`);
 ok("состав сравнения зашит в адрес страницы", page.url().includes("items="));

@@ -58,7 +58,7 @@ export function SiteHeader() {
         </button>
 
         <Link href="/" className="flex items-center gap-2" aria-label={`${COMPANY.name} — на главную`}>
-          <Logo className="h-8 w-auto lg:h-9" />
+          <Logo className="h-8 w-auto lg:h-9" priority />
         </Link>
 
         <nav className="ml-4 hidden items-center gap-5 lg:flex">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Breadcrumbs, ButtonLink, SectionHeading, TrustBlock } from "@/components/ui";
 import { IconClock, IconPhone, IconPin } from "@/components/icons";
+import { Logo } from "@/components/logo";
 import { COMPANY } from "@/lib/content";
 import { PICKUP } from "@/lib/delivery";
 
@@ -14,9 +15,12 @@ export default function AboutPage() {
   return (
     <div className="shell pb-16">
       <Breadcrumbs items={[{ href: "/", label: "Главная" }, { label: "О питомнике" }]} />
-      <h1 className="font-display text-3xl leading-tight font-bold lg:text-4xl">
-        {COMPANY.years} лет, {COMPANY.varieties} сортов, {COMPANY.orders} заказов
-      </h1>
+      <div className="flex flex-wrap items-center gap-5">
+        <Logo full wordmark={false} className="h-24 w-auto lg:h-28" />
+        <h1 className="font-display text-3xl leading-tight font-bold lg:text-4xl">
+          {COMPANY.years} лет, {COMPANY.varieties} сортов, {COMPANY.orders} заказов
+        </h1>
+      </div>
       <p className="text-ink-muted mt-4 max-w-3xl text-lg leading-relaxed">
         Мы начинали с двух грядок малины и продаж в сообществе ВКонтакте — там до сих пор живёт наша
         переписка с покупателями за все эти годы. Сегодня это питомник на 4 гектара, но принцип не

@@ -53,7 +53,7 @@ Seedlings/
 | Накладная | `/invoice/[id]`, читает localStorage | Серверный рендер по id заказа + PDF во вложение письма |
 | Отзывы | `components/product-reviews.tsx`, localStorage | API с модерацией и загрузкой фото |
 | Фотографии | `site/public/photos/`, `lib/photos.generated.ts`, `scripts/photo-manifest.mjs` | Файл с именем по слагу сорта → фото подхватывается везде; где фото нет, остаётся иллюстрация |
-| Логотип | `COMPANY.logo` в `lib/content.ts` | Путь к файлу в `public/` — знак заменяется в шапке, футере и накладной |
+| Логотип | `COMPANY.logo` и `COMPANY.logoMark` в `lib/content.ts`, файлы в `public/logo/` | Подключён. Новый исходник — в `Seedlings/assets/logo-source.png`, затем `node Seedlings/scripts/logo-prep.mjs`: пересоберёт оба размера и иконки |
 | Импорт из ВК | `scripts/vk-import.mjs` | Название, товары, описания, цены и фото сообщества через официальный API (нужен токен) |
 | Кабинет | Данные из последнего заказа | Вход по одноразовому коду из письма |
 

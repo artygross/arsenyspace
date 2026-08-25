@@ -4,6 +4,7 @@ import { EmptyState, Button } from "./ui";
 import { IconPrint } from "./icons";
 import { useOrders } from "@/lib/orders";
 import { PICKUP, ZONES } from "@/lib/delivery";
+import { Logo } from "./logo";
 import { COMPANY } from "@/lib/content";
 import { amountInWords, formatDate, formatPrice } from "@/lib/format";
 
@@ -49,10 +50,13 @@ export function InvoiceView({ id }: { id: string }) {
             </h1>
             <p className="text-ink-muted mt-1 text-sm">от {formatDate(order.createdAt)}</p>
           </div>
-          <div className="text-sm">
-            <p className="font-semibold">{COMPANY.name}</p>
-            <p className="text-ink-muted">{COMPANY.legal}</p>
-            <p className="text-ink-muted">{COMPANY.phone}</p>
+          <div className="flex items-start gap-3 text-sm">
+            <Logo full wordmark={false} className="h-14 w-auto shrink-0" />
+            <div>
+              <p className="font-semibold">{COMPANY.name}</p>
+              <p className="text-ink-muted">{COMPANY.legal}</p>
+              <p className="text-ink-muted">{COMPANY.phone}</p>
+            </div>
           </div>
         </header>
 

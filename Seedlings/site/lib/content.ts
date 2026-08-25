@@ -3,11 +3,14 @@
 export const COMPANY = {
   name: "Полесье",
   /**
-   * Логотип клиента. Положите файл в `public/` и укажите путь — тогда знак и подпись
-   * в шапке, футере и накладной заменятся на него. `null` — рисуется временный знак
-   * из docs/05-ui-system.md §11.
+   * Эмблема клиента. `logo` — полная, с кольцевой надписью «САЖЕНЦЫ МАЛИНЫ И КЛУБНИКИ»;
+   * `logoMark` — тот же рисунок без кольца, для мелких размеров: ниже 40 px надпись
+   * превращается в шум (docs/05-ui-system.md §11). Оба файла пересобираются из
+   * `Seedlings/assets/logo-source.png` командой `node Seedlings/scripts/logo-prep.mjs`.
+   * `null` в обоих полях — рисуется временный знак.
    */
-  logo: null as string | null,
+  logo: "/logo/polesie.png" as string | null,
+  logoMark: "/logo/polesie-mark.png" as string | null,
   /** Показывать ли название текстом рядом со знаком */
   logoWithWordmark: true,
   legal: "КФХ Полесье",
