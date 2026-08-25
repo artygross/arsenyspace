@@ -10,8 +10,9 @@
 | Адрес | https://svoya-gryadka-demo.netlify.app |
 | Панель проекта | https://app.netlify.com/projects/svoya-gryadka-demo |
 | Проект | `svoya-gryadka-demo`, команда `artygross`, план Free |
-| Способ | Прод-деплой из CLI: `netlify deploy --prod --build --filter seedlings-site` |
+| Способ | Прод-деплой из CLI **из корня репозитория**: `netlify deploy --prod --build --filter seedlings-site` |
 | Состояние | Сборка `ready`, одна серверная функция (SSR-обработчик Next) |
+| Доступ | Открыт: сайт отдаёт витрину без входа в Netlify |
 | Бейдж Netlify | Отключён (`built_with_badge_enabled: false`) |
 
 Плавающая плашка «Powered by Netlify» занимает 194×64 px в правом нижнем углу и перехватывает
@@ -26,13 +27,18 @@ netlify api updateSite --data '{"site_id":"<id>","body":{"built_with_badge_enabl
 `netlify api updateSite --data '{"site_id":"<id>","body":{"name":"polesie-demo"}}'`,
 но прежний адрес после этого перестаёт открываться.
 
-**Доступ к сайту закрыт настройкой команды.** В аккаунте включено `site_sso_login` — Netlify
-требует вход в свою учётную запись для просмотра любого сайта команды, поэтому посторонний
-(и клиент) видит экран логина, а не витрину. Через API переключатель не меняется, только в интерфейсе:
+**Команду деплоя нельзя запускать из `Seedlings/site`.** В интерфейсе проекта задана
+Publish directory, и она резолвится относительно base directory: с base = `Seedlings/site`
+путь удваивается в `Seedlings/site/Seedlings/site/.next`, и сборка падает в `onBuild`
+плагина Next.js. Из корня с `--filter seedlings-site` base остаётся корнем и путь сходится.
+Либо очистить Publish directory в интерфейсе — тогда его вычислит адаптер.
 
-- по команде: **Team settings → Access & security → Site protection** — снять требование логина
-  (или оставить его только для Deploy Previews);
-- либо по проекту: **Project configuration → Access & security → Visitor access** — сделать сайт публичным.
+**Доступ к сайту открыт.** Требование входа в учётную запись Netlify (`site_sso_login`),
+которое закрывало витрину, снято: сайт отдаёт страницы анонимному запросу, защиты паролем нет.
+Если доступ снова закроется, переключатели там же:
+
+- по команде: **Team settings → Access & security → Site protection**;
+- по проекту: **Project configuration → Access & security → Visitor access**.
 
 **Автодеплой из GitHub не подключён:** выкладка сделана из CLI собранной локально сборкой.
 Чтобы деплой шёл при каждом пуше в ветку `seedlings`: Project configuration → Build & deploy →
@@ -65,6 +71,18 @@ Link repository → репозиторий `arsenyspace`, ветка `seedlings`
 Если в интерфейсе нет поля Package directory (оно доступно в настройках проекта после создания),
 можно задать **Base directory = `Seedlings/site`** — конфиг будет найден там же, а pnpm сам
 подтянет воркспейс из корня. Обе схемы рабочие, команда сборки от места запуска не зависит.
+
+## Токен для деплоя
+
+CLI глобально не установлен, запускается разово: `pnpm --package=netlify-cli dlx netlify …`
+(проверено на 27.1.2). Авторизация — переменной `NETLIFY_AUTH_TOKEN`; персональный токен
+лежит в `.netlify-token` в корне репозитория, файл в `.gitignore` и с правами `600`:
+
+```bash
+export NETLIFY_AUTH_TOKEN="$(cat .netlify-token)"
+```
+
+Токен создаётся в **User settings → Applications → Personal access tokens** и отзывается там же.
 
 ## Проверить после первого деплоя
 
