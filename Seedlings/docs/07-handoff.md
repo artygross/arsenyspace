@@ -85,8 +85,10 @@ email-уведомления (точки подключения готовы), S
 
 ## 6. Деплой
 
-`Seedlings/site/netlify.toml` готов. В панели Netlify: New site → импорт репозитория →
-**Branch = `seedlings`**, **Base directory = `Seedlings/site`**. Адаптер OpenNext Netlify подключает сам.
+`Seedlings/site/netlify.toml` готов, приложение оформлено пакетом pnpm-воркспейса `seedlings-site`.
+В панели Netlify: импорт репозитория → **Branch = `seedlings`**, **Base directory** оставить корнем,
+**Package directory = `Seedlings/site`**. Пошагово, вместе с чек-листом проверки после деплоя
+и списком ограничений демо-режима, — в `11-deploy-netlify.md`.
 
 Альтернатива, если сайт рассады должен жить в корне ветки: перенести содержимое
 `Seedlings/site` в корень (`git mv`) и удалить код магазина очков на этой ветке — он останется на `main`.

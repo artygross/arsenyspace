@@ -18,7 +18,7 @@
 | 5 | UI System | ✅ Завершён |
 | 6 | Design Execution | ✅ Волна 1 целиком + сравнение, подборки, статьи и микроразметка из волны 2 |
 | 7 | Documentation | 🔄 Ведётся непрерывно |
-| 8 | Handoff | ✅ `07-handoff.md`, деплой подготовлен |
+| 8 | Handoff | ✅ `07-handoff.md`; выкладка на Netlify — `11-deploy-netlify.md` |
 
 ## Зафиксированные решения
 
@@ -64,7 +64,8 @@
 - `docs/01-interview.md` … `docs/10-copy.md` — документация этапов, интеграции, вопросы, тексты
 - `site/` — приложение: 21 маршрут, 54 сорта, 4 подборки, 3 статьи
 - `scripts/visual-check.mjs`, `scripts/flow-check.mjs` — проверка в браузере
-- `site/netlify.toml` — деплой
+- `site/netlify.toml`, `docs/11-deploy-netlify.md` — выкладка на Netlify
+- `site/package.json` — пакет pnpm-воркспейса `seedlings-site`
 
 ## Точка восстановления
 

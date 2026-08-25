@@ -7,10 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "dev:seedlings": "next dev Seedlings/site -p 3210",
-    "build:seedlings": "next build Seedlings/site",
-    "start:seedlings": "next start Seedlings/site -p 3210",
-    "lint:seedlings": "eslint Seedlings/site/app Seedlings/site/components Seedlings/site/lib",
+    "dev:seedlings": "pnpm --filter seedlings-site dev",
+    "build:seedlings": "pnpm --filter seedlings-site build",
+    "start:seedlings": "pnpm --filter seedlings-site start",
+    "lint:seedlings": "pnpm --filter seedlings-site lint",
     "check:seedlings": "node Seedlings/scripts/visual-check.mjs && node Seedlings/scripts/flow-check.mjs"
   },
   "dependencies": {

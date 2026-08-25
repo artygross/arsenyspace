@@ -1,15 +1,24 @@
-# Деплой сайта рассады. В панели Netlify для этого сайта укажите
-# Base directory = Seedlings/site — тогда этот файл станет корневым конфигом сборки.
-# Адаптер OpenNext намеренно НЕ закрепляется версией: Netlify обновляет его под релизы Next.js.
+# Конфигурация сборки сайта рассады.
+#
+# Netlify ищет netlify.toml в package directory → base directory → корне репозитория,
+# поэтому этот файл действует, когда в настройках проекта указан
+# Package directory = Seedlings/site (base directory оставляем корнем — оттуда
+# ставятся зависимости всего pnpm-воркспейса).
+#
+# Команда собирает пакет по имени, а не по пути, поэтому работает и из корня,
+# и из директории пакета. Адаптер OpenNext Netlify подключает сам и версией
+# намеренно не закрепляется: Netlify обновляет его под релизы Next.js.
 
 [build]
-  command = "npx next build"
+  command = "pnpm --filter seedlings-site build"
   publish = ".next"
 
 [build.environment]
   NODE_VERSION = "22"
+  # Сборка тянет шрифты с fonts.googleapis.com — без сети next/font упадёт
   NEXT_TELEMETRY_DISABLED = "1"
 
+# Приложение самодостаточно: внешних скриптов нет, шрифты инлайнятся при сборке.
 [[headers]]
   for = "/*"
   [headers.values]
