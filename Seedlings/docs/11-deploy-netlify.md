@@ -3,12 +3,34 @@
 Цель этой выкладки — показать клиенту работающий прототип для согласования, а не запустить
 магазин в продажу. Поэтому данные остаются демонстрационными, а индексация закрытой.
 
+## Текущая выкладка
+
+| Что | Значение |
+|---|---|
+| Адрес | https://svoya-gryadka-demo.netlify.app |
+| Панель проекта | https://app.netlify.com/projects/svoya-gryadka-demo |
+| Проект | `svoya-gryadka-demo`, команда `artygross`, план Free |
+| Способ | Прод-деплой из CLI: `netlify deploy --prod --build --filter seedlings-site` |
+| Состояние | Сборка `ready`, одна серверная функция (SSR-обработчик Next) |
+
+**Доступ к сайту закрыт настройкой команды.** В аккаунте включено `site_sso_login` — Netlify
+требует вход в свою учётную запись для просмотра любого сайта команды, поэтому посторонний
+(и клиент) видит экран логина, а не витрину. Через API переключатель не меняется, только в интерфейсе:
+
+- по команде: **Team settings → Access & security → Site protection** — снять требование логина
+  (или оставить его только для Deploy Previews);
+- либо по проекту: **Project configuration → Access & security → Visitor access** — сделать сайт публичным.
+
+**Автодеплой из GitHub не подключён:** выкладка сделана из CLI собранной локально сборкой.
+Чтобы деплой шёл при каждом пуше в ветку `seedlings`: Project configuration → Build & deploy →
+Link repository → репозиторий `arsenyspace`, ветка `seedlings`, Package directory `Seedlings/site`.
+
 ## Что уже готово в репозитории
 
 | Элемент | Где | Состояние |
 |---|---|---|
 | Приложение | `Seedlings/site` | Пакет pnpm-воркспейса `seedlings-site` со своим `package.json` |
-| Конфиг сборки | `Seedlings/site/netlify.toml` | Команда, publish, версия Node, заголовки безопасности |
+| Конфиг сборки | `Seedlings/site/netlify.toml` | Команда сборки, версия Node, заголовки безопасности |
 | Ветка | `seedlings` | Отдельная от `main`, где живёт магазин очков |
 | Индексация | `Seedlings/site/app/robots.ts` | `Disallow: /` — прототип не должен попасть в поиск |
 
@@ -20,8 +42,11 @@
    всего pnpm-воркспейса, включая пакет сайта.
 4. **Package directory:** `Seedlings/site`. Это указывает Netlify, какой пакет собирать
    и где искать `netlify.toml`.
-5. **Build command и Publish directory** подставятся из `netlify.toml`
-   (`pnpm --filter seedlings-site build`, `.next`) — менять не нужно.
+5. **Build command** подставится из `netlify.toml` (`pnpm --filter seedlings-site build`).
+   **Publish directory оставить пустым**: путь до `.next` вычисляет адаптер Next.js по директории
+   пакета. Заданный вручную, он резолвится относительно base directory и в монорепозитории
+   указывает не туда — на этом сборка спотыкается (проверено: `.next` превращался
+   то в `Seedlings/site/Seedlings/site/.next`, то в корневой `.next` магазина очков).
 6. **Deploy.** Первая сборка ставит зависимости с нуля, дальше работает кэш.
 
 Если в интерфейсе нет поля Package directory (оно доступно в настройках проекта после создания),

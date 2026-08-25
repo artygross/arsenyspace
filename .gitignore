@@ -44,3 +44,8 @@ next-env.d.ts
 
 # screenshots from scripts/visual-check.mjs
 /.screenshots/
+/.screenshots-prod/
+
+# служебная папка Netlify CLI и локальный токен
+.netlify
+.netlify-token

@@ -9,9 +9,11 @@
 # и из директории пакета. Адаптер OpenNext Netlify подключает сам и версией
 # намеренно не закрепляется: Netlify обновляет его под релизы Next.js.
 
+# publish намеренно не задан: путь до .next вычисляет адаптер Next.js по директории
+# пакета. Заданный вручную, он резолвится относительно base directory и в монорепозитории
+# указывает не туда — CLI и облачная сборка считают его по-разному.
 [build]
   command = "pnpm --filter seedlings-site build"
-  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "22"
