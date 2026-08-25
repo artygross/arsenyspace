@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@source "../app";
+@source "../components";
+@source "../lib";
+
+/* Токены дизайн-системы — Seedlings/docs/05-ui-system.md */
+@theme {
+  --color-ink: #1c2b21;
+  --color-ink-muted: #5d6f63;
+  --color-surface: #ffffff;
+  --color-cream: #fbf8f1;
+  --color-sand: #f2e9d7;
+  --color-line: #e4ded0;
+  --color-leaf: #2f7a4a;
+  --color-leaf-deep: #235c38;
+  --color-leaf-soft: #e8f2e6;
+  --color-grass: #8cc63f;
+  --color-berry: #c8452f;
+  --color-sun: #e0982a;
+
+  --font-display: var(--font-manrope), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+
+  --radius-card: 20px;
+  --radius-field: 14px;
+  --radius-banner: 28px;
+
+  --shadow-soft: 0 4px 16px rgba(28, 43, 33, 0.06);
+  --shadow-lift: 0 10px 28px rgba(28, 43, 33, 0.1);
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Липкая шапка: якоря и прокрутка к элементу не должны прятать цель под ней */
+  scroll-padding-top: 6rem;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Контейнер: max 1280, поля 16 / 32 / 48 — docs/05 §3 */
+@utility shell {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1280px;
+  padding-inline: 1rem;
+  @media (min-width: 768px) {
+    padding-inline: 2rem;
+  }
+  @media (min-width: 1280px) {
+    padding-inline: 3rem;
+  }
+}
+
+/* Вертикальный ритм секций: 48 mobile / 88 desktop */
+@utility section {
+  padding-block: 3rem;
+  @media (min-width: 1024px) {
+    padding-block: 5.5rem;
+  }
+}
+
+@utility card-surface {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+}
+
+@utility eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+/* Правило поведения №6 — фокус виден всегда */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-leaf);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Поля форм */
+@utility field {
+  width: 100%;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-field);
+  background: var(--color-surface);
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: var(--color-ink);
+  transition: border-color 0.15s ease;
+  &::placeholder {
+    color: color-mix(in srgb, var(--color-ink-muted) 70%, transparent);
+  }
+  &:hover {
+    border-color: color-mix(in srgb, var(--color-leaf) 40%, var(--color-line));
+  }
+}
+
+/* Скрыть скроллбар у горизонтальных лент */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+}

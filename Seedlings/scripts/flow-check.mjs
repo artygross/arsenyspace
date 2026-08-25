@@ -1,0 +1,157 @@
+/**
+ * Проверка сценариев: фильтры, поиск, избранное, корзина, промокод, чекаут,
+ * накладная, кабинет и подписка на несезонный товар.
+ * Запуск: pnpm exec next start Seedlings/site -p 3210 && node Seedlings/scripts/flow-check.mjs
+ */
+import { chromium } from "playwright";
+import fs from "node:fs";
+
+const BASE = process.env.BASE_URL ?? "http://localhost:3210";
+const OUT = process.env.SHOTS_DIR ?? "./.screenshots";
+fs.mkdirSync(OUT, { recursive: true });
+
+const results = [];
+const ok = (name, condition, detail = "") =>
+  results.push({ name, condition: Boolean(condition), detail });
+
+const browser = await chromium.launch();
+const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: "ru-RU" });
+const page = await ctx.newPage();
+const pageErrors = [];
+page.on("pageerror", (e) => pageErrors.push(e.message));
+
+/* ---------- 1. Главная → каталог культуры ---------- */
+await page.goto(BASE + "/");
+await page.locator('a[href="/catalog/klubnika"]').first().click();
+await page.waitForURL("**/catalog/klubnika**");
+ok("плитка культур ведёт в каталог культуры", page.url().includes("/catalog/klubnika"));
+
+/* ---------- 2. Фасеты: отклик и URL ---------- */
+const totalBefore = Number((await page.locator("text=/^\\d+ сорт/").first().innerText()).split(" ")[0]);
+const facet = page.locator('label[for="ripening-everbearing"]');
+await facet.click();
+ok("чекбокс фасета отмечается сразу", await page.locator("#ripening-everbearing").isChecked());
+await page.waitForURL("**ripening=everbearing**");
+const totalAfter = Number((await page.locator("text=/^\\d+ сорт/").first().innerText()).split(" ")[0]);
+ok("фасет пишется в URL и сужает выдачу", totalAfter > 0 && totalAfter < totalBefore, `${totalBefore} → ${totalAfter}`);
+await page.screenshot({ path: `${OUT}/flow-facets.png` });
+
+/* ---------- 3. Чипсы и сброс ---------- */
+await page.getByRole("button", { name: /Ремонтантный/ }).click();
+await page.waitForURL((u) => !u.search.includes("ripening"));
+ok("чипс снимает фильтр", !page.url().includes("ripening"));
+
+/* ---------- 4. Поиск ---------- */
+await page.getByRole("button", { name: "Поиск по каталогу" }).click();
+const searchInput = page.getByLabel("Поисковый запрос");
+await searchInput.fill("полка");
+await page.waitForTimeout(200);
+const suggestion = page.locator("a", { hasText: "Полка" }).first();
+ok("автокомплит показывает подсказки", await suggestion.isVisible());
+await searchInput.press("Enter");
+await page.waitForURL("**/search?q=**");
+ok("поиск открывает страницу результатов", (await page.locator("article").count()) > 0);
+
+/* ---------- 5. Избранное ---------- */
+await page.goto(BASE + "/catalog/klubnika");
+await page.getByRole("button", { name: "В избранное" }).first().click();
+await page.waitForTimeout(150);
+ok("счётчик избранного в шапке обновился", (await page.locator("header").getByText("1", { exact: true }).count()) > 0);
+await page.goto(BASE + "/favorites");
+ok("избранное сохранилось между страницами", (await page.locator("article").count()) === 1);
+
+/* ---------- 6. Корзина и промокод ---------- */
+await page.goto(BASE + "/catalog/klubnika");
+const addButton = page.getByRole("button", { name: "В корзину" }).first();
+for (let i = 0; i < 3; i++) {
+  await addButton.click();
+  await page.waitForTimeout(400);
+}
+await page.goto(BASE + "/cart");
+ok("корзина переживает навигацию", (await page.getByText("3", { exact: true }).count()) > 0);
+
+await page.getByLabel("Промокод").fill("НЕТТАКОГО");
+await page.getByRole("button", { name: "Применить" }).click();
+ok("несуществующий промокод даёт ошибку", await page.getByText("Такого промокода нет").isVisible());
+
+await page.getByLabel("Промокод").fill("ВЕСНА15");
+await page.getByRole("button", { name: "Применить" }).click();
+ok("промокод ВЕСНА15 применяется", await page.getByText("−15 % на клубнику").isVisible());
+await page.screenshot({ path: `${OUT}/flow-cart-promo.png` });
+
+/* ---------- 7. Чекаут ---------- */
+await page.getByRole("link", { name: "Оформить заказ" }).click();
+await page.waitForURL("**/checkout");
+await page.getByRole("button", { name: "Оформить заказ" }).click();
+ok("пустая форма не отправляется и подсвечивает поле", await page.getByText("Как к вам обращаться?").isVisible());
+ok("фокус переходит на первое ошибочное поле", await page.locator('[name="name"]').evaluate((el) => el === document.activeElement));
+
+await page.getByRole("button", { name: /Самовывоз/ }).click();
+ok("самовывоз убирает поле адреса", (await page.locator('[name="address"]').count()) === 0);
+ok("самовывоз обнуляет доставку", await page.getByText("бесплатно").first().isVisible());
+await page.getByRole("button", { name: "Доставка", exact: false }).first().click();
+
+await page.locator('[name="name"]').fill("Ольга Морозова");
+await page.locator('[name="phone"]').fill("+7 900 111-22-33");
+await page.locator('[name="email"]').fill("olga@example.com");
+await page.locator('[name="address"]').fill("Тула, ул. Садовая, д. 4, кв. 12");
+await page.screenshot({ path: `${OUT}/flow-checkout.png` });
+await page.getByRole("button", { name: "Оформить заказ" }).click();
+await page.waitForURL("**/checkout/success**");
+const orderHeading = await page.locator("h1").innerText();
+ok("заказ оформляется и получает номер", /Заказ СГ-\d+ принят/.test(orderHeading), orderHeading);
+ok("корзина очищается после заказа", (await page.locator("header").getByText("3", { exact: true }).count()) === 0);
+
+/* ---------- 8. Накладная ---------- */
+await page.getByRole("link", { name: /Открыть накладную/ }).click();
+await page.waitForURL("**/invoice/**");
+ok("накладная содержит сумму прописью", /рубл/.test(await page.locator("article").innerText()));
+ok("в накладной есть артикулы позиций", (await page.locator("table tbody tr").count()) > 0);
+await page.screenshot({ path: `${OUT}/flow-invoice.png`, fullPage: true });
+
+/* ---------- 9. Кабинет и повтор заказа ---------- */
+await page.goto(BASE + "/account");
+ok("заказ виден в кабинете", (await page.getByText(/Заказ СГ-\d+/).count()) > 0);
+await page.getByRole("button", { name: "Повторить заказ" }).click();
+await page.waitForTimeout(200);
+ok("повтор заказа кладёт позиции в корзину", (await page.locator("header").getByText("3", { exact: true }).count()) > 0);
+
+/* ---------- 10. Несезонный товар ---------- */
+await page.goto(BASE + "/product/ovoshchnaya-rassada-byche-serdtse");
+const purchaseCard = page.locator("div").filter({ has: page.locator("form#notify") }).last();
+ok("вне сезона в блоке покупки нет кнопки корзины", (await purchaseCard.getByRole("button", { name: "В корзину" }).count()) === 0);
+await page.locator('input[type="email"]').first().fill("olga@example.com");
+await page.getByRole("button", { name: "Сообщить" }).click();
+ok("подписка на поступление подтверждается", await page.getByText(/вернётся в продажу/).isVisible());
+
+/* ---------- 11. Фасовка меняет цену ---------- */
+await page.goto(BASE + "/product/klubnika-polka");
+const priceBefore = await page.getByTestId("pdp-price").innerText();
+await page.locator('input[name="variant"]').nth(1).check();
+await page.waitForTimeout(150);
+const priceAfter = await page.getByTestId("pdp-price").innerText();
+ok("выбор фасовки пересчитывает цену", priceBefore !== priceAfter, `${priceBefore} → ${priceAfter}`);
+
+/* ---------- 12. Мобильное меню ---------- */
+const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "ru-RU" });
+const mpage = await mobile.newPage();
+mpage.on("pageerror", (e) => pageErrors.push(e.message));
+await mpage.goto(BASE + "/");
+await mpage.getByRole("button", { name: "Открыть меню" }).click();
+ok("мобильное меню открывается", await mpage.getByRole("banner").getByRole("link", { name: "Весь каталог" }).isVisible());
+await mpage.screenshot({ path: `${OUT}/flow-mobile-menu.png` });
+
+await mpage.goto(BASE + "/catalog");
+await mpage.getByRole("button", { name: /Фильтры/ }).click();
+ok("шторка фильтров открывается на мобильном", await mpage.getByRole("button", { name: /Показать \d+ сорт/ }).isVisible());
+await mpage.screenshot({ path: `${OUT}/flow-mobile-filters.png` });
+
+await browser.close();
+
+const failed = results.filter((r) => !r.condition);
+for (const r of results) {
+  console.log(`${r.condition ? "OK  " : "FAIL"} ${r.name}${r.detail ? " — " + r.detail : ""}`);
+}
+if (pageErrors.length) console.log("Ошибки страницы:\n" + pageErrors.map((e) => " · " + e).join("\n"));
+console.log(`\n${results.length - failed.length}/${results.length} сценариев прошли`);
+if (failed.length || pageErrors.length) process.exit(1);

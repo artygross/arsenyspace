@@ -16,6 +16,8 @@
 # next.js
 /.next/
 /out/
+Seedlings/site/.next/
+Seedlings/site/next-env.d.ts
 
 # production
 /build

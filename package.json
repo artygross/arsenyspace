@@ -6,7 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "dev:seedlings": "next dev Seedlings/site -p 3210",
+    "build:seedlings": "next build Seedlings/site",
+    "start:seedlings": "next start Seedlings/site -p 3210",
+    "lint:seedlings": "eslint Seedlings/site/app Seedlings/site/components Seedlings/site/lib",
+    "check:seedlings": "node Seedlings/scripts/visual-check.mjs && node Seedlings/scripts/flow-check.mjs"
   },
   "dependencies": {
     "next": "16.3.2",
@@ -20,6 +25,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.2",
+    "playwright": "^1.62.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
