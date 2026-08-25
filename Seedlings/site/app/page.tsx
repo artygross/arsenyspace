@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { PlantArt, LeafMark } from "@/components/plant-art";
+import { LeafMark } from "@/components/plant-art";
+import { ProductImage } from "@/components/product-image";
 import { ProductGrid } from "@/components/product-card";
 import { SubscribeForm } from "@/components/subscribe-form";
 import { ButtonLink, Faq, Rating, SectionHeading, TrustBlock } from "@/components/ui";
@@ -66,7 +67,7 @@ export default function HomePage() {
                   href={`/product/${p.slug}`}
                   className="bg-surface hover:shadow-lift rounded-2xl p-2 transition-shadow"
                 >
-                  <PlantArt product={p} className="h-28 w-full lg:h-32" decorative />
+                  <ProductImage product={p} className="h-28 w-full lg:h-32 rounded-xl" sizes="200px" decorative />
                   <p className="truncate px-1 pb-1 text-center text-xs font-medium">{p.name}</p>
                 </Link>
               ))}
@@ -97,7 +98,7 @@ export default function HomePage() {
                   href={`/catalog/${c.slug}`}
                   className="card-surface hover:shadow-lift flex h-full flex-col items-center p-3 text-center transition-all hover:-translate-y-0.5"
                 >
-                  <PlantArt product={sample} className="h-24 w-full" decorative />
+                  <ProductImage product={sample} className="h-24 w-full rounded-xl" sizes="160px" decorative />
                   <span className="mt-1 font-medium">{c.name}</span>
                   <span className="text-ink-muted text-sm">{counts[c.key]} сортов</span>
                 </Link>
@@ -151,7 +152,7 @@ export default function HomePage() {
                 >
                   <div className="bg-leaf-soft -mx-2 -mt-2 mb-3 flex gap-1 rounded-2xl px-2 py-1">
                     {items.slice(0, 3).map((p) => (
-                      <PlantArt key={p.slug} product={p} className="h-20 w-1/3" decorative />
+                      <ProductImage key={p.slug} product={p} className="h-20 w-1/3 rounded-lg" sizes="120px" decorative />
                     ))}
                   </div>
                   <p className="font-display text-lg font-bold">{c.title}</p>

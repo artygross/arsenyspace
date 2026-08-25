@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { PlantArt } from "./plant-art";
+import { ProductImage } from "./product-image";
 import { ProductGrid } from "./product-card";
 import { Button, ButtonLink, EmptyState, Price, SectionHeading, TrustBlock } from "./ui";
 import { IconMinus, IconPlus, IconTrash } from "./icons";
@@ -56,7 +56,7 @@ export function CartView() {
           {items.map(({ product, qty }) => (
             <li key={product.slug} className="card-surface flex gap-3 p-3 sm:gap-4 sm:p-4">
               <Link href={`/product/${baseSlug(product.slug)}`} className="bg-leaf-soft shrink-0 rounded-2xl">
-                <PlantArt product={product} className="size-24 sm:size-28" decorative />
+                <ProductImage product={product} className="size-24 sm:size-28 rounded-2xl" sizes="112px" decorative />
               </Link>
 
               <div className="flex flex-1 flex-col">

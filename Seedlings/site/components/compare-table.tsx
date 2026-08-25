@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { PlantArt } from "./plant-art";
+import { ProductImage } from "./product-image";
 import { AddToCartButton } from "./add-to-cart";
 import { EmptyState, Price } from "./ui";
 import { IconClose } from "./icons";
@@ -119,7 +119,7 @@ export function CompareTable() {
                       <IconClose className="size-4" />
                     </button>
                     <div className="bg-leaf-soft rounded-xl">
-                      <PlantArt product={p} className="h-28 w-full" decorative />
+                      <ProductImage product={p} className="h-28 w-full rounded-xl" sizes="200px" decorative />
                     </div>
                     <p className="eyebrow mt-2">{CULTURE_BY_KEY.get(p.culture)!.name}</p>
                     <Link href={`/product/${p.slug}`} className="hover:text-leaf block font-medium">

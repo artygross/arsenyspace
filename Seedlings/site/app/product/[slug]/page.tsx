@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PlantArt } from "@/components/plant-art";
+import { ProductImage } from "@/components/product-image";
 import { ProductPurchase } from "@/components/product-purchase";
 import { ProductReviews } from "@/components/product-reviews";
 import { ProductGrid } from "@/components/product-card";
@@ -83,7 +83,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
       <div className="grid gap-6 lg:grid-cols-[1.1fr_.9fr] lg:gap-10">
         <div>
           <div className="bg-leaf-soft relative overflow-hidden rounded-[28px]">
-            <PlantArt product={product} className="h-72 w-full lg:h-[460px]" />
+            <ProductImage product={product} className="h-72 w-full lg:h-[460px]" sizes="(max-width: 1024px) 100vw, 620px" priority />
             {badges.length > 0 && (
               <div className="absolute top-4 left-4 flex flex-col items-start gap-2">
                 {badges.map((b) => (

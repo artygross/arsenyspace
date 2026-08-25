@@ -42,7 +42,7 @@ const problems = [];
 const browser = await chromium.launch();
 
 for (const [vpName, width, height] of VIEWPORTS) {
-  const ctx = await browser.newContext({ viewport: { width, height }, locale: "ru-RU" });
+  const ctx = await browser.newContext({ viewport: { width, height }, locale: "ru-RU", reducedMotion: "reduce" });
   const page = await ctx.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(`${page.url()} :: ${e.message}`));

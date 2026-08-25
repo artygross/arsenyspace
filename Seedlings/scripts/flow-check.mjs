@@ -15,7 +15,7 @@ const ok = (name, condition, detail = "") =>
   results.push({ name, condition: Boolean(condition), detail });
 
 const browser = await chromium.launch();
-const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: "ru-RU" });
+const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: "ru-RU", reducedMotion: "reduce" });
 const page = await ctx.newPage();
 const pageErrors = [];
 page.on("pageerror", (e) => pageErrors.push(e.message));
@@ -62,13 +62,16 @@ ok("избранное сохранилось между страницами", 
 
 /* ---------- 6. Корзина и промокод ---------- */
 await page.goto(BASE + "/catalog/klubnika");
-const addButton = page.getByRole("button", { name: "В корзину" }).first();
-for (let i = 0; i < 3; i++) {
-  await addButton.click();
-  await page.waitForTimeout(400);
+// Кнопка на 1.5 с превращается в «Добавлено», и .first() переезжает на соседнюю карточку.
+// Ждём факт — счётчик в шапке, а не таймер.
+const cartBadge = page.locator("header a[href='/cart'] span");
+for (let i = 1; i <= 3; i++) {
+  await page.getByRole("button", { name: "В корзину" }).first().click();
+  await cartBadge.filter({ hasText: String(i) }).waitFor();
 }
 await page.goto(BASE + "/cart");
-ok("корзина переживает навигацию", (await page.getByText("3", { exact: true }).count()) > 0);
+await page.locator("main li").first().waitFor();
+ok("корзина переживает навигацию", (await cartBadge.innerText()) === "3", `в счётчике ${await cartBadge.innerText()}`);
 
 await page.getByLabel("Промокод").fill("НЕТТАКОГО");
 await page.getByRole("button", { name: "Применить" }).click();
@@ -135,13 +138,20 @@ ok("выбор фасовки пересчитывает цену", priceBefore 
 
 /* ---------- 13. Сравнение сортов ---------- */
 await page.goto(BASE + "/catalog/klubnika");
+// Кнопка после клика меняет подпись на «В сравнении», и nth(0) переезжает на следующую
+// карточку. Ждём факт смены подписи: без этого на медленной гидрации второй клик попадает
+// по той же карточке и снимает выбор.
 const compareButtons = page.getByRole("button", { name: "Сравнить" });
-await compareButtons.nth(0).click();
-await compareButtons.nth(0).click();
-await page.waitForTimeout(200);
+await compareButtons.first().click();
+await page.getByRole("button", { name: "В сравнении" }).first().waitFor();
+await compareButtons.first().click();
+await page.getByRole("button", { name: "В сравнении" }).nth(1).waitFor();
 ok("полоса сравнения появляется", await page.getByRole("link", { name: "Сравнить" }).isVisible());
 await page.getByRole("link", { name: "Сравнить" }).click();
 await page.waitForURL("**/compare**");
+// Страница сравнения клиентская: до гидрации в разметке заглушка Suspense,
+// поэтому ждём саму таблицу, а не факт навигации
+await page.locator("thead th").nth(1).waitFor();
 const columns = await page.locator("thead th").count();
 ok("в таблице сравнения две колонки сортов", columns === 3, `колонок с подписью: ${columns - 1}`);
 const rowsAll = await page.locator("tbody tr").count();
@@ -152,16 +162,16 @@ ok("режим «только отличия» скрывает совпадаю
 ok("состав сравнения зашит в адрес страницы", page.url().includes("items="));
 await page.screenshot({ path: `${OUT}/flow-compare.png`, fullPage: true });
 await page.getByRole("button", { name: "Очистить сравнение" }).click();
-await page.waitForTimeout(150);
+await page.getByText("Сравнивать пока нечего").waitFor();
 ok("сравнение очищается", await page.getByText("Сравнивать пока нечего").isVisible());
 
 /* ---------- 14. Подборка одной кнопкой ---------- */
 await page.goto(BASE + "/collection/klubnika-na-vsyo-leto");
 const collectionItems = await page.locator("ol > li").count();
 await page.getByRole("button", { name: "Взять всю подборку" }).click();
-await page.waitForTimeout(300);
-const cartBadge = await page.locator("header a[href='/cart'] span").innerText();
-ok("подборка кладётся в корзину одной кнопкой", Number(cartBadge) >= collectionItems, `в корзине ${cartBadge}, в подборке ${collectionItems}`);
+await page.getByRole("button", { name: "Подборка в корзине" }).waitFor();
+const inCart = await cartBadge.innerText();
+ok("подборка кладётся в корзину одной кнопкой", Number(inCart) >= collectionItems, `в корзине ${inCart}, в подборке ${collectionItems}`);
 
 /* ---------- 15. Статья и перелинковка ---------- */
 await page.goto(BASE + "/care");
@@ -181,7 +191,7 @@ const productLd = JSON.parse(ld[types.indexOf("Product")]);
 ok("в разметке указаны цена и наличие", productLd.offers?.price > 0 && String(productLd.offers?.availability).includes("schema.org"));
 
 /* ---------- 17. Мобильное меню ---------- */
-const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "ru-RU" });
+const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "ru-RU", reducedMotion: "reduce" });
 const mpage = await mobile.newPage();
 mpage.on("pageerror", (e) => pageErrors.push(e.message));
 await mpage.goto(BASE + "/");

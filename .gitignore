@@ -46,6 +46,10 @@ next-env.d.ts
 /.screenshots/
 /.screenshots-prod/
 
-# служебная папка Netlify CLI и локальный токен
+# служебная папка Netlify CLI и локальные токены
 .netlify
 .netlify-token
+.vk-token
+
+# сырьё выгрузки из ВК — рабочий файл, в репозиторий не нужен
+/Seedlings/vk-export/

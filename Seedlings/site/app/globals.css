@@ -31,9 +31,15 @@
 }
 
 html {
-  scroll-behavior: smooth;
   /* Липкая шапка: якоря и прокрутка к элементу не должны прятать цель под ней */
   scroll-padding-top: 6rem;
+}
+
+/* Плавная прокрутка — только тем, кто не просил уменьшить анимацию */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
