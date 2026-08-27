@@ -76,7 +76,9 @@ export default function AboutPage() {
                 <a href={COMPANY.phoneHref} className="hover:text-leaf text-sm">
                   {COMPANY.phone}
                 </a>
-                <span className="text-ink-muted block text-sm">{COMPANY.email}</span>
+                <a href={`mailto:${COMPANY.email}`} className="hover:text-leaf block text-sm">
+                  {COMPANY.email}
+                </a>
               </span>
             </li>
           </ul>

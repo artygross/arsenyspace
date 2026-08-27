@@ -97,6 +97,13 @@ export const IconStar = ({ filled = true, ...p }: SVGProps<SVGSVGElement> & { fi
   </Icon>
 );
 
+export const IconMail = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="m3.5 6.5 8.5 6 8.5-6" />
+  </Icon>
+);
+
 export const IconPlus = (p: SVGProps<SVGSVGElement>) => (
   <Icon {...p}>
     <path d="M12 5v14M5 12h14" />

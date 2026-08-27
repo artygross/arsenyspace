@@ -3,7 +3,7 @@ import { CULTURES } from "@/lib/catalog";
 import { COLLECTIONS } from "@/lib/collections";
 import { COMPANY } from "@/lib/content";
 import { PICKUP } from "@/lib/delivery";
-import { IconPhone, IconPin } from "./icons";
+import { IconMail, IconPhone, IconPin } from "./icons";
 import { Logo } from "./logo";
 
 const HELP = [
@@ -80,6 +80,12 @@ export function SiteFooter() {
               <IconPhone className="text-leaf size-5 shrink-0" />
               <a href={COMPANY.phoneHref} className="hover:text-leaf">
                 {COMPANY.phone}
+              </a>
+            </li>
+            <li className="flex gap-2">
+              <IconMail className="text-leaf size-5 shrink-0" />
+              <a href={`mailto:${COMPANY.email}`} className="hover:text-leaf">
+                {COMPANY.email}
               </a>
             </li>
             <li className="flex gap-2">
