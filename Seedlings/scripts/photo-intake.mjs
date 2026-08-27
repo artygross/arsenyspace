@@ -68,7 +68,9 @@ for (const p of products) {
     const out = path.join(outDir, `${p.slug}${i ? `-${i + 1}` : ""}.jpg`);
     await sharp(path.join(dir, file))
       .rotate() // разворот по EXIF: снимки с телефона иначе лягут боком
-      .resize(1200, 1500, { fit: "cover", position: "attention" })
+      // Кадрируем от центра, а не «по вниманию»: у клиента на снимках впечатана
+      // подпись сорта и водяной знак, и умный кадр резал их пополам.
+      .resize(1200, 1500, { fit: "cover", position: "centre" })
       .jpeg({ quality: 82, mozjpeg: true })
       .toFile(out);
     taken++;
