@@ -36,7 +36,11 @@ const ROWS: Row[] = [
   { label: "Фасовка", value: (p) => packLabel(p) },
   { label: "Цена за штуку", value: (p) => formatPrice(Math.round(p.price / p.packSize)) },
   { label: "Наличие", value: (p) => `${AVAILABILITY_LABEL[p.availability]} · ${shipsLabel(p).toLowerCase()}` },
-  { label: "Оценка покупателей", value: (p) => `${p.rating.toFixed(1)} из 5` },
+  {
+    label: "Оценка покупателей",
+    // Пока настоящих отзывов нет, строка честно пустая, а не «0,0 из 5»
+    value: (p) => (p.reviewCount > 0 ? `${p.rating.toFixed(1)} из 5` : "—"),
+  },
 ];
 
 export function CompareTable() {

@@ -19,7 +19,7 @@ export function SeasonBar() {
     <div className="bg-leaf text-white no-print">
       <div className="shell flex items-center gap-3 py-2 text-sm">
         <p className="flex-1">
-          Осенняя отгрузка — с 5 сентября. Предзаказ открыт, цена фиксируется сегодняшняя.{" "}
+          Открыт приём заказов на лето-осень 2026 без предоплаты — оплата при получении.{" "}
           <Link href="/sale" className="underline underline-offset-2">
             Смотреть акции
           </Link>

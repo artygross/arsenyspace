@@ -6,7 +6,17 @@ import { PromoField } from "./promo-field";
 import { Button, ButtonLink, EmptyState, Price, TrustBlock } from "./ui";
 import { IconCheck, IconPin, IconTruck } from "./icons";
 import { cartTotals, clearCart, hydrate, useCartLines } from "@/lib/cart";
-import { PICKUP, ZONES, quoteDelivery, type Fulfilment, type ZoneKey } from "@/lib/delivery";
+import {
+  KRONSTADT,
+  METHODS,
+  METHOD_BY_KEY,
+  PERIODS,
+  PICKUP,
+  SPB_PICKUPS,
+  fulfilmentOf,
+  quoteDelivery,
+  type MethodKey,
+} from "@/lib/delivery";
 import { formatPrice, plural } from "@/lib/format";
 import { nextOrderId, saveOrder, sku, type Order } from "@/lib/orders";
 import type { PromoResult } from "@/lib/promo";
@@ -19,10 +29,16 @@ export function CheckoutForm() {
   const items = hydrate(lines);
   const totals = cartTotals(items);
 
-  const [fulfilment, setFulfilment] = useState<Fulfilment>("delivery");
-  const [zone, setZone] = useState<ZoneKey>("city");
+  const [method, setMethod] = useState<MethodKey>("cdek");
+  const [period, setPeriod] = useState<string>(PERIODS[0]);
   const [promo, setPromo] = useState<PromoResult | null>(null);
-  const [payment, setPayment] = useState<Order["payment"]>("on_delivery");
+  const chosen = METHOD_BY_KEY.get(method)!;
+  const fulfilment = fulfilmentOf(method);
+  // У выдачи в Петербурге период — это конкретная дата у станции, а не месяц
+  const periods =
+    method === "spb"
+      ? SPB_PICKUPS.map((p) => `${p.station}, ${new Date(p.date).toLocaleDateString("ru-RU", { day: "numeric", month: "long" })}`)
+      : PERIODS;
   const [form, setForm] = useState({ name: "", phone: "", email: "", address: "", comment: "" });
   const [errors, setErrors] = useState<Errors>({});
   const [sending, setSending] = useState(false);
@@ -43,14 +59,12 @@ export function CheckoutForm() {
 
   const discount = promo?.ok ? promo.discount : 0;
   const quote = quoteDelivery({
-    fulfilment,
-    zone,
-    weight: totals.weight,
+    method,
     subtotal: totals.subtotal - discount,
     freeShipping: promo?.ok ? promo.freeShipping : false,
   });
-  const total = totals.subtotal - discount + quote.cost;
-  const prepay = totals.hasPreorder ? Math.round(total * 0.2) : 0;
+  // Тариф перевозчика в сумму не входит: его назовут при подтверждении брони
+  const total = totals.subtotal - discount + quote.cost + quote.packaging;
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -62,7 +76,7 @@ export function CheckoutForm() {
     if (form.name.trim().length < 2) e.name = "Как к вам обращаться?";
     if (form.phone.replace(/\D/g, "").length < 11) e.phone = "Телефон нужен курьеру — 11 цифр";
     if (!/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(form.email)) e.email = "На эту почту уйдут накладная и подтверждение";
-    if (fulfilment === "delivery" && form.address.trim().length < 8)
+    if (chosen.needsAddress && form.address.trim().length < 8)
       e.address = "Укажите город, улицу и дом";
     return e;
   }
@@ -90,9 +104,16 @@ export function CheckoutForm() {
         comment: form.comment.trim() || undefined,
       },
       fulfilment,
-      zone: fulfilment === "delivery" ? zone : undefined,
-      address: fulfilment === "delivery" ? form.address.trim() : PICKUP.address,
-      payment,
+      method,
+      address: chosen.needsAddress
+        ? form.address.trim()
+        : method === "pickup"
+          ? PICKUP.address
+          : method === "kronstadt"
+            ? KRONSTADT
+            : undefined,
+      period,
+      payment: "on_delivery",
       lines: items.map(({ product, qty }) => ({
         slug: product.slug,
         sku: sku(product.slug),
@@ -105,6 +126,8 @@ export function CheckoutForm() {
       discount,
       promo: promo?.ok ? promo.code : undefined,
       deliveryCost: quote.cost,
+      deliveryByCarrier: quote.byCarrier,
+      packaging: quote.packaging,
       total,
       weight: Math.round(totals.weight * 10) / 10,
       hasPreorder: totals.hasPreorder,
@@ -117,7 +140,10 @@ export function CheckoutForm() {
 
   return (
     <form ref={formRef} onSubmit={submit} className="shell py-8 lg:py-10" noValidate>
-      <h1 className="font-display mb-6 text-3xl font-bold lg:text-4xl">Оформление заказа</h1>
+      <h1 className="font-display mb-2 text-3xl font-bold lg:text-4xl">Бронь саженцев</h1>
+      <p className="text-ink-muted mb-6">
+        Без предоплаты: бронь ни к чему не обязывает, оплата — при получении.
+      </p>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_360px] lg:gap-8">
         <div className="grid gap-4">
@@ -125,38 +151,22 @@ export function CheckoutForm() {
           <section className="card-surface p-5">
             <h2 className="font-display mb-4 text-xl font-bold">1. Как получить</h2>
             <div className="grid gap-3 sm:grid-cols-2">
-              <ChoiceCard
-                active={fulfilment === "delivery"}
-                onClick={() => setFulfilment("delivery")}
-                title="Доставка"
-                text="Курьер или транспортная компания"
-                icon={<IconTruck className="size-5" />}
-              />
-              <ChoiceCard
-                active={fulfilment === "pickup"}
-                onClick={() => setFulfilment("pickup")}
-                title="Самовывоз — 0 ₽"
-                text={PICKUP.hours}
-                icon={<IconPin className="size-5" />}
-              />
+              {METHODS.map((m) => (
+                <ChoiceCard
+                  key={m.key}
+                  active={method === m.key}
+                  onClick={() => setMethod(m.key)}
+                  title={m.byCarrier ? m.label : m.base > 0 ? `${m.label} — ${formatPrice(m.base)}` : `${m.label} — 0 ₽`}
+                  text={m.hint}
+                  icon={m.key === "pickup" || m.key === "kronstadt" || m.key === "spb" ? <IconPin className="size-5" /> : <IconTruck className="size-5" />}
+                />
+              ))}
             </div>
 
-            {fulfilment === "delivery" ? (
-              <div className="mt-4 grid gap-3">
-                <label className="grid gap-1.5 text-sm">
-                  <span className="font-medium">Куда везём</span>
-                  <select
-                    className="field"
-                    value={zone}
-                    onChange={(e) => setZone(e.target.value as ZoneKey)}
-                  >
-                    {ZONES.map((z) => (
-                      <option key={z.key} value={z.key}>
-                        {z.label} — {z.hint}, {z.days}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+            {chosen.note && <p className="bg-sand/60 mt-4 rounded-2xl p-4 text-sm">{chosen.note}</p>}
+
+            {chosen.needsAddress && (
+              <div className="mt-3">
                 <Field
                   name="address"
                   label="Адрес"
@@ -167,17 +177,36 @@ export function CheckoutForm() {
                   autoComplete="street-address"
                 />
               </div>
-            ) : (
-              <div className="bg-sand/60 mt-4 rounded-2xl p-4 text-sm">
+            )}
+
+            {method === "pickup" && (
+              <div className="bg-sand/60 mt-3 rounded-2xl p-4 text-sm">
                 <p className="font-medium">{PICKUP.address}</p>
                 <p className="text-ink-muted mt-1">
-                  {PICKUP.hours} · {PICKUP.ready} · {PICKUP.keep}
-                </p>
-                <p className="text-ink-muted mt-2">
-                  Когда заказ будет готов, придёт письмо с датой и сроком хранения.
+                  {PICKUP.hours} · {PICKUP.ready}
                 </p>
               </div>
             )}
+
+            {method === "kronstadt" && (
+              <p className="bg-sand/60 mt-3 rounded-2xl p-4 text-sm font-medium">{KRONSTADT}</p>
+            )}
+
+            <label className="mt-4 grid gap-1.5 text-sm">
+              <span className="font-medium">
+                {method === "spb" ? "Когда и где встречаемся" : "Когда хотите получить"}
+              </span>
+              <select className="field" name="period" value={period} onChange={(e) => setPeriod(e.target.value)}>
+                {periods.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </select>
+              <span className="text-ink-muted">
+                Это пожелание, а не жёсткий срок: перед отправкой мы созвонимся и договоримся точно.
+              </span>
+            </label>
           </section>
 
           {/* 2. Контакты */}
@@ -229,28 +258,17 @@ export function CheckoutForm() {
           {/* 3. Оплата */}
           <section className="card-surface p-5">
             <h2 className="font-display mb-4 text-xl font-bold">3. Оплата</h2>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <ChoiceCard
-                active={payment === "on_delivery"}
-                onClick={() => setPayment("on_delivery")}
-                title="При получении"
-                text="Наличными или картой"
-              />
-              <ChoiceCard
-                active={payment === "prepay"}
-                onClick={() => setPayment("prepay")}
-                title="Предоплата 20 %"
-                text="Фиксирует цену и место в партии"
-              />
-            </div>
-            {totals.hasPreorder && (
-              <p className="text-sun mt-3 text-sm">
-                В заказе есть позиции по предзаказу: предоплата {formatPrice(prepay)} закрепит цену.
+            <p className="text-sm leading-relaxed">
+              Предоплаты нет. Вы платите за саженцы, упаковку и доставку при получении —
+              в пункте выдачи СДЭК, в почтовом отделении или на месте, если забираете сами.
+              Посылку можно вскрыть и осмотреть до оплаты.
+            </p>
+            {quote.byCarrier && (
+              <p className="text-ink-muted mt-3 text-sm">
+                Доставку считает перевозчик по тарифу для юридических лиц. Точную сумму назовём,
+                когда созвонимся и подтвердим бронь.
               </p>
             )}
-            <p className="text-ink-muted mt-3 text-sm">
-              Онлайн-оплата подключается опционально после подтверждения эквайринга — docs/08-integrations.md.
-            </p>
           </section>
         </div>
 
@@ -282,11 +300,20 @@ export function CheckoutForm() {
               <Row label={`Товары, ${totals.count} ${plural(totals.count, "шт.", "шт.", "шт.")}`} value={formatPrice(totals.subtotal)} />
               {discount > 0 && promo?.ok && <Row label={`Промокод ${promo.code}`} value={`−${formatPrice(discount)}`} tone="berry" />}
               <Row
-                label={fulfilment === "pickup" ? "Самовывоз" : `Доставка · ${quote.days}`}
-                value={quote.cost === 0 ? "бесплатно" : formatPrice(quote.cost)}
-                tone={quote.cost === 0 ? "leaf" : undefined}
+                label={`${chosen.label} · ${quote.days}`}
+                value={
+                  quote.byCarrier
+                    ? "по тарифу перевозчика"
+                    : quote.cost === 0
+                      ? "бесплатно"
+                      : formatPrice(quote.cost)
+                }
+                tone={!quote.byCarrier && quote.cost === 0 ? "leaf" : undefined}
               />
-              {quote.thermo > 0 && <Row label="Термоупаковка" value="включена" />}
+              {quote.discount > 0 && !quote.byCarrier && (
+                <Row label={`Скидка на доставку ${Math.round(quote.discount * 100)} %`} value="учтена" tone="leaf" />
+              )}
+              <Row label="Упаковка" value={formatPrice(quote.packaging)} />
               <Row label="Вес заказа" value={`${totals.weight.toFixed(1)} кг`} />
             </dl>
 
@@ -295,8 +322,14 @@ export function CheckoutForm() {
               <Price value={total} size="l" />
             </div>
 
+            {quote.byCarrier && (
+              <p className="text-ink-muted mt-2 text-xs">
+                Доставка перевозчика в эту сумму не входит — её назовём при подтверждении.
+              </p>
+            )}
+
             <Button type="submit" size="l" className="mt-4 w-full" disabled={sending}>
-              {sending ? "Оформляем…" : "Оформить заказ"}
+              {sending ? "Оформляем…" : "Забронировать без предоплаты"}
             </Button>
             <p className="text-ink-muted mt-3 text-center text-xs">
               Нажимая кнопку, вы соглашаетесь с офертой и политикой обработки персональных данных.

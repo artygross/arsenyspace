@@ -3,7 +3,7 @@
 import { EmptyState, Button } from "./ui";
 import { IconPrint } from "./icons";
 import { useOrders } from "@/lib/orders";
-import { PICKUP, ZONES } from "@/lib/delivery";
+import { METHOD_BY_KEY, PICKUP } from "@/lib/delivery";
 import { Logo } from "./logo";
 import { COMPANY } from "@/lib/content";
 import { amountInWords, formatDate, formatPrice } from "@/lib/format";
@@ -28,7 +28,7 @@ export function InvoiceView({ id }: { id: string }) {
     );
   }
 
-  const zone = ZONES.find((z) => z.key === order.zone);
+  const method = METHOD_BY_KEY.get(order.method);
   const goods = order.lines.reduce((s, l) => s + l.price * l.qty, 0);
 
   return (
@@ -116,10 +116,18 @@ export function InvoiceView({ id }: { id: string }) {
             </div>
           )}
           <div className="flex justify-between">
-            <dt className="text-ink-muted">
-              {order.fulfilment === "pickup" ? "Самовывоз" : `Доставка — ${zone?.label}`}
-            </dt>
-            <dd>{order.deliveryCost === 0 ? "0 ₽" : formatPrice(order.deliveryCost)}</dd>
+            <dt className="text-ink-muted">{method?.label ?? "Доставка"}</dt>
+            <dd>
+              {order.deliveryByCarrier
+                ? "по тарифу перевозчика"
+                : order.deliveryCost === 0
+                  ? "0 ₽"
+                  : formatPrice(order.deliveryCost)}
+            </dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="text-ink-muted">Упаковка</dt>
+            <dd>{formatPrice(order.packaging)}</dd>
           </div>
           <div className="border-line flex justify-between border-t pt-2 text-base font-bold">
             <dt>Итого</dt>
@@ -136,13 +144,14 @@ export function InvoiceView({ id }: { id: string }) {
         <section className="border-line mt-5 grid gap-2 border-t pt-5 text-sm">
           <p>
             <span className="text-ink-muted">Способ получения: </span>
-            {order.fulfilment === "pickup"
-              ? `Самовывоз, ${PICKUP.address}, ${PICKUP.hours}`
-              : `Доставка, ${order.address} (${zone?.label}, ${zone?.days})`}
+            {method?.label ?? "Доставка"}
+            {order.address ? `, ${order.address}` : ""}
+            {order.period ? ` · ${order.period}` : ""}
           </p>
           <p>
             <span className="text-ink-muted">Оплата: </span>
-            {order.payment === "prepay" ? "Предоплата 20 %, остальное при получении" : "При получении"}
+            При получении, без предоплаты
+            {order.deliveryByCarrier ? ". Доставка — по тарифу перевозчика" : ""}
           </p>
           <p>
             <span className="text-ink-muted">Вес заказа: </span>
@@ -156,7 +165,7 @@ export function InvoiceView({ id }: { id: string }) {
           )}
           {order.hasPreorder && (
             <p className="text-ink-muted">
-              В заказе есть позиции по предзаказу — отгрузка партии с 5 сентября.
+              В заказе есть позиции по предзаказу — отправим, когда партия будет готова, и предупредим заранее.
             </p>
           )}
         </section>
@@ -167,7 +176,7 @@ export function InvoiceView({ id }: { id: string }) {
         </footer>
 
         <p className="text-ink-muted mt-6 text-xs">
-          Гарантия приживаемости 14 дней с даты получения. При гарантийном случае пришлите фото
+          Мы отвечаем за сохранность саженцев в дороге. При повреждении пришлите фото
           растения на {COMPANY.email}.
         </p>
       </article>

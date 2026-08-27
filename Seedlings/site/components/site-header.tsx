@@ -46,7 +46,11 @@ export function SiteHeader() {
   }, [menuOpen, searchOpen]);
 
   return (
-    <header className="bg-surface/95 border-line sticky top-0 z-40 border-b backdrop-blur no-print">
+    // Шторки — соседи шапки, а не её потомки. У шапки backdrop-blur, а backdrop-filter
+    // создаёт для position: fixed новую систему координат: вложенная шторка получала
+    // размеры шапки вместо экрана и открывалась полоской поверх страницы.
+    <>
+      <header className="bg-surface/95 border-line sticky top-0 z-40 border-b backdrop-blur no-print">
       <div className="shell flex h-16 items-center gap-3 lg:h-20 lg:gap-6">
         <button
           type="button"
@@ -155,10 +159,11 @@ export function SiteHeader() {
           </Link>
         </div>
       </div>
+      </header>
 
       {menuOpen && <MobileMenu onClose={close} counts={counts} />}
       {searchOpen && <SearchSheet onClose={close} />}
-    </header>
+    </>
   );
 }
 
@@ -172,7 +177,7 @@ function Counter({ value }: { value: number }) {
 
 function MobileMenu({ onClose, counts }: { onClose: () => void; counts: Record<string, number> }) {
   return (
-    <div className="bg-cream fixed inset-0 z-50 flex flex-col lg:hidden">
+    <div data-testid="mobile-menu" className="bg-cream fixed inset-0 z-50 flex flex-col lg:hidden">
       <div className="shell flex h-16 items-center justify-between">
         <Logo className="h-11 w-auto" />
         <button type="button" onClick={onClose} aria-label="Закрыть меню" className="flex size-10 items-center justify-center">

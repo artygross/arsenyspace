@@ -9,7 +9,8 @@ import { IconStar } from "./icons";
 
 const store = createStore<Record<string, Review[]>>("sg_reviews_v1", {});
 
-export function ProductReviews({ slug, reviews, rating, count }: { slug: string; reviews: Review[]; rating: number; count: number }) {
+/** Рейтинг и число отзывов считаются здесь: настоящие отзывы придут вместе со своими оценками */
+export function ProductReviews({ slug, reviews }: { slug: string; reviews: Review[] }) {
   const mine = store.useValue();
   const own = mine[slug] ?? [];
   const all = [...own, ...reviews];
@@ -17,26 +18,40 @@ export function ProductReviews({ slug, reviews, rating, count }: { slug: string;
 
   const distribution = [5, 4, 3, 2, 1].map((star) => ({
     star,
-    share: Math.round((all.filter((r) => Math.round(r.rating) === star).length / all.length) * 100),
+    // На пустом списке деление дало бы NaN и полосы во всю ширину
+    share: all.length
+      ? Math.round((all.filter((r) => Math.round(r.rating) === star).length / all.length) * 100)
+      : 0,
   }));
+  const average = all.length
+    ? Math.round((all.reduce((sum, r) => sum + r.rating, 0) / all.length) * 10) / 10
+    : 0;
 
   return (
     <section id="reviews" className="scroll-mt-24">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h2 className="font-display text-2xl font-bold lg:text-3xl">
-          Отзывы <span className="text-ink-muted font-sans text-base font-normal">{count}</span>
+          Отзывы{" "}
+          <span className="text-ink-muted font-sans text-base font-normal">{all.length || ""}</span>
         </h2>
         <Button variant="secondary" onClick={() => setOpen((v) => !v)}>
           {open ? "Свернуть форму" : "Написать отзыв"}
         </Button>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
+      {all.length === 0 && (
+        <p className="card-surface text-ink-muted p-5 leading-relaxed">
+          Отзывы об этом сорте мы переносим из обсуждений сообщества ВКонтакте — здесь они появятся
+          вместе с именами и городами авторов. Свой отзыв можно оставить прямо сейчас.
+        </p>
+      )}
+
+      <div className={`grid gap-6 lg:grid-cols-[240px_1fr] ${all.length === 0 ? "hidden" : ""}`}>
         <div className="card-surface h-fit p-5">
-          <p className="font-display text-4xl font-bold">{rating.toFixed(1)}</p>
-          <Rating value={rating} count={count} compact />
+          <p className="font-display text-4xl font-bold">{average.toFixed(1)}</p>
+          <Rating value={average} count={all.length} compact />
           <p className="text-ink-muted mt-1 text-sm">
-            {count} {plural(count, "отзыв", "отзыва", "отзывов")}
+            {all.length} {plural(all.length, "отзыв", "отзыва", "отзывов")}
           </p>
           <ul className="mt-4 grid gap-1.5">
             {distribution.map((d) => (

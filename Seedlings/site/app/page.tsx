@@ -3,9 +3,9 @@ import { LeafMark } from "@/components/plant-art";
 import { ProductImage } from "@/components/product-image";
 import { ProductGrid } from "@/components/product-card";
 import { SubscribeForm } from "@/components/subscribe-form";
-import { ButtonLink, Faq, Rating, SectionHeading, TrustBlock } from "@/components/ui";
+import { ButtonLink, Faq, SectionHeading, TrustBlock } from "@/components/ui";
 import { FaqLd, OrganizationLd } from "@/components/structured-data";
-import { IconBox, IconClock, IconPin, IconTruck } from "@/components/icons";
+import { IconBox, IconClock, IconLeaf, IconPhone, IconPin, IconTruck } from "@/components/icons";
 import {
   CULTURES,
   MONTHS_IN,
@@ -14,10 +14,10 @@ import {
   hits,
   seasonalPicks,
 } from "@/lib/catalog";
-import { ADVANTAGES, DELIVERY_STEPS, FAQ_ITEMS, REVIEWS_HOME } from "@/lib/content";
+import { ADVANTAGES, COMPANY, DELIVERY_STEPS, FAQ_ITEMS } from "@/lib/content";
 import { ARTICLES } from "@/lib/articles";
 import { COLLECTIONS, collectionItems } from "@/lib/collections";
-import { FREE_FROM, PICKUP, ZONES } from "@/lib/delivery";
+import { METHODS, PICKUP } from "@/lib/delivery";
 import { formatPrice } from "@/lib/format";
 
 export default function HomePage() {
@@ -36,26 +36,28 @@ export default function HomePage() {
       <section className="bg-sand/60">
         <div className="shell grid items-center gap-8 py-10 lg:grid-cols-[1.1fr_.9fr] lg:py-16">
           <div>
-            <p className="eyebrow">Питомник с 2014 года · Тульская область</p>
+            <p className="eyebrow">Питомник саженцев · Ленинградская область</p>
             <h1 className="font-display mt-3 text-[2rem] leading-[1.1] font-bold lg:text-5xl">
-              Рассада и саженцы
+              Саженцы ягодных культур
               <br />
-              из своего питомника
+              с отправкой по России
             </h1>
             <p className="text-ink-muted mt-4 max-w-xl text-lg leading-relaxed">
-              Выращиваем сами — от маточника до вашей грядки. Сорта, проверенные в средней полосе,
-              с закрытой корневой системой. Отгружаем в срок и упаковываем так, чтобы растение доехало живым.
+              Малина, клубника, смородина, ежевика и голубика. Часть сортов растёт на наших полях,
+              часть отбираем в белорусских питомниках — и в том и в другом случае едет закрытая
+              корневая система, упакованная так, чтобы растение доехало живым.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <ButtonLink href="/catalog" size="l">
-                Выбрать рассаду
+                Выбрать саженцы
               </ButtonLink>
               <ButtonLink href="#season" variant="secondary" size="l">
                 Что сажать сейчас
               </ButtonLink>
             </div>
             <p className="text-ink-muted mt-5 text-sm">
-              Осенняя отгрузка — с 5 сентября. Предзаказ открыт, цена фиксируется сегодняшняя.
+              Открыт приём заказов на лето-осень 2026 без предоплаты: бронь ни к чему не обязывает,
+              оплата — при получении.
             </p>
           </div>
 
@@ -188,12 +190,13 @@ export default function HomePage() {
         <SectionHeading
           eyebrow="Доставка"
           title="Доставим живым — или заменим"
-          text="Растения едут в термокоробе. Отправляем в день сбора и не отправляем в мороз: дождёмся окна и предупредим вас."
+          text="Бронь бесплатна, оплата — при получении. Отправляем в день сбора и не отправляем в мороз: дождёмся окна и предупредим вас."
           action={{ href: "/delivery", label: "Подробно о доставке" }}
         />
         <div className="grid gap-4 md:grid-cols-3">
           {DELIVERY_STEPS.map((s, i) => {
-            const StepIcon = [IconBox, IconTruck, IconClock][i];
+            // Шагов брони четыре — иконок должно быть столько же, иначе последний шаг падает
+            const StepIcon = [IconLeaf, IconPhone, IconTruck, IconBox][i] ?? IconBox;
             return (
             <div key={s.title} className="card-surface p-5">
               <span className="bg-leaf-soft text-leaf-deep flex size-10 items-center justify-center rounded-full">
@@ -205,16 +208,16 @@ export default function HomePage() {
             );
           })}
         </div>
-        <ul className="text-ink-muted mt-4 grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
-          {ZONES.map((z) => (
-            <li key={z.key} className="card-surface px-4 py-3">
-              <span className="text-ink block font-medium">{z.label}</span>
-              {z.days} · от {formatPrice(z.base)}
+        <ul className="text-ink-muted mt-4 grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
+          {METHODS.map((m) => (
+            <li key={m.key} className="card-surface px-4 py-3">
+              <span className="text-ink block font-medium">{m.label}</span>
+              {m.byCarrier ? "по тарифу перевозчика" : m.base > 0 ? formatPrice(m.base) : "бесплатно"} · {m.days}
             </li>
           ))}
         </ul>
         <p className="text-leaf mt-3 text-sm font-medium">
-          Бесплатно при заказе от {formatPrice(FREE_FROM)}
+          Доставка на адрес дешевле на 10 % за каждые 10 000 ₽ в заказе
         </p>
       </section>
 
@@ -227,9 +230,10 @@ export default function HomePage() {
               Заберите сами и посмотрите растение вживую
             </h2>
             <p className="text-ink-muted mt-3 max-w-2xl leading-relaxed">
-              Питомник открыт ежедневно с 9:00 до 18:00. Соберём заказ к вашему приезду — обычно за
-              день, в разгар сезона до двух. Можно выбрать конкретные экземпляры на месте, задать
-              вопросы агроному и увидеть, как выглядит корневая система, до того как заплатите.
+              Заберите заказ в питомнике: дату и время согласуем заранее, соберём к вашему приезду.
+              Можно выбрать конкретные экземпляры на месте, задать вопросы и увидеть, как выглядит
+              корневая система, до того как заплатите. Для Санкт-Петербурга есть бесплатные выдачи
+              у метро весной и бесплатный пункт выдачи в Кронштадте.
             </p>
             <ul className="mt-5 grid gap-2 text-sm">
               <li className="flex gap-2">
@@ -269,24 +273,23 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 9. Отзывы */}
+      {/* 9. Отзывы. Настоящие переносим из сообщества ВКонтакте — docs/09-questions.md.
+           Придуманные для прототипа сняты по решению клиента 27 августа 2026. */}
       <section className="bg-leaf-soft/50">
         <div className="shell section">
           <SectionHeading
             eyebrow="Отзывы"
             title="Что пишут покупатели"
-            text="Отзывы переносим из сообщества ВКонтакте с разрешения авторов."
+            text="Переносим отзывы из сообщества ВКонтакте с разрешения авторов — здесь они появятся вместе с именами и городами."
           />
-          <div className="grid gap-4 md:grid-cols-3">
-            {REVIEWS_HOME.map((r) => (
-              <figure key={r.author} className="card-surface flex flex-col p-5">
-                <Rating value={r.rating} count={0} compact />
-                <blockquote className="mt-3 flex-1 leading-relaxed">{r.text}</blockquote>
-                <figcaption className="text-ink-muted mt-4 text-sm">
-                  {r.author} · {r.region}
-                </figcaption>
-              </figure>
-            ))}
+          <div className="card-surface p-6 text-center">
+            <p className="text-ink-muted leading-relaxed">
+              Пока отзывы живут в обсуждениях сообщества: там их несколько лет и их видно целиком,
+              вместе с ответами питомника.
+            </p>
+            <ButtonLink href={COMPANY.vk} variant="secondary" className="mt-4">
+              Читать отзывы во ВКонтакте
+            </ButtonLink>
           </div>
         </div>
       </section>

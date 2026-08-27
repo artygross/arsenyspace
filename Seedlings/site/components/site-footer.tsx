@@ -23,8 +23,8 @@ export function SiteFooter() {
         <div>
           <Logo className="h-12 w-auto" />
           <p className="text-ink-muted mt-4 text-sm leading-relaxed">
-            Питомник рассады и саженцев. Выращиваем сами с 2014 года, отправляем по всей России
-            и отдаём на самовывоз в Тульской области.
+            Питомник саженцев ягодных культур в Ломоносовском районе Ленинградской области.
+            Бронь без предоплаты, оплата при получении, отправка СДЭК и Почтой России.
           </p>
           <a
             href="https://vk.ru/kupit_sazhentsy_maliny_klubniki"
@@ -96,9 +96,12 @@ export function SiteFooter() {
 
       <div className="border-line border-t">
         <div className="shell text-ink-muted flex flex-wrap justify-between gap-3 py-5 text-xs">
-          <p>© 2026 {COMPANY.legal}. Реквизиты подставляются после ответов клиента (docs/09-questions.md).</p>
           <p>
-            Демонстрационный прототип: цены, остатки и отзывы вымышлены. Индексация закрыта.
+            © 2026 {COMPANY.legal} · Роскомнадзор № {COMPANY.rkn}. ИНН и ОГРН добавим до запуска
+            (docs/09-questions.md).
+          </p>
+          <p>
+            Демонстрационный прототип: цены и остатки условные. Индексация закрыта.
           </p>
         </div>
       </div>

@@ -33,7 +33,7 @@ export async function generateMetadata(props: PageProps<"/product/[slug]">): Pro
   const culture = CULTURE_BY_KEY.get(product.culture)!;
   return {
     title: `${culture.name} «${product.name}» — купить в питомнике`,
-    description: `${product.short}. ${RIPENING_LABEL[product.ripening]} срок, зимостойкость до ${product.hardiness} °C, урожайность ${product.yieldPerBush}. Гарантия приживаемости 14 дней.`,
+    description: `${product.short}. ${RIPENING_LABEL[product.ripening]} срок, зимостойкость до ${hardinessLabel(product.hardiness)}, урожайность ${product.yieldPerBush}. Бронь без предоплаты, оплата при получении.`,
     alternates: { canonical: `/product/${product.slug}` },
   };
 }
@@ -106,11 +106,13 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
           <h1 className="font-display mt-2 text-3xl leading-tight font-bold lg:text-4xl">
             {product.name}
           </h1>
-          <div className="mt-3 flex flex-wrap items-center gap-4">
-            <a href="#reviews" className="hover:text-leaf">
-              <Rating value={product.rating} count={product.reviewCount} />
-            </a>
-          </div>
+          {product.reviewCount > 0 && (
+            <div className="mt-3 flex flex-wrap items-center gap-4">
+              <a href="#reviews" className="hover:text-leaf">
+                <Rating value={product.rating} count={product.reviewCount} />
+              </a>
+            </div>
+          )}
           <p className="mt-4 leading-relaxed">{product.short}.</p>
 
           <div className="mt-6">
@@ -128,7 +130,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
             </li>
             <li className="flex items-start gap-2">
               <IconShield className="text-leaf size-5 shrink-0" />
-              Гарантия приживаемости 14 дней: не прижилось — заменим или вернём деньги.
+              Бронь без предоплаты: платите при получении, посылку можно вскрыть до оплаты.
             </li>
           </ul>
         </div>
@@ -188,12 +190,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
       </div>
 
       <div className="mt-14">
-        <ProductReviews
-          slug={product.slug}
-          reviews={product.reviews}
-          rating={product.rating}
-          count={product.reviewCount}
-        />
+        <ProductReviews slug={product.slug} reviews={product.reviews} />
       </div>
 
       {/* Допродажа комплектом — docs/02-analysis.md §1 */}

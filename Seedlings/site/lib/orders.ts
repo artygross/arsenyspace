@@ -1,7 +1,7 @@
 "use client";
 
 import { createStore } from "./store";
-import type { Fulfilment, ZoneKey } from "./delivery";
+import type { Fulfilment, MethodKey } from "./delivery";
 
 export { sku } from "./sku";
 
@@ -20,14 +20,19 @@ export type Order = {
   status: "new" | "collecting" | "ready" | "shipped" | "done";
   customer: { name: string; phone: string; email: string; comment?: string };
   fulfilment: Fulfilment;
-  zone?: ZoneKey;
+  method: MethodKey;
   address?: string;
-  payment: "on_delivery" | "prepay";
+  /** Когда покупатель хочет получить заказ — клиент спрашивает это при брони */
+  period: string;
+  payment: "on_delivery";
   lines: OrderLine[];
   subtotal: number;
   discount: number;
   promo?: string;
   deliveryCost: number;
+  /** Стоимость доставки считает перевозчик, а не сайт */
+  deliveryByCarrier: boolean;
+  packaging: number;
   total: number;
   weight: number;
   hasPreorder: boolean;

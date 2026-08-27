@@ -5,14 +5,14 @@ import { useSearchParams } from "next/navigation";
 import { ButtonLink, EmptyState } from "./ui";
 import { IconCheck, IconClock, IconPin, IconPrint, IconTruck } from "./icons";
 import { ORDER_STATUS_LABEL, useOrders } from "@/lib/orders";
-import { PICKUP, ZONES } from "@/lib/delivery";
+import { METHOD_BY_KEY, PICKUP } from "@/lib/delivery";
 import { formatPrice } from "@/lib/format";
 
 const FIRST_DAY = [
   "Распакуйте коробку в день получения — растению нужен воздух.",
   "Полейте ком земли, не размывая его, и поставьте в тень на сутки.",
   "Высаживайте на следующий день, вечером или в пасмурную погоду.",
-  "Если что-то пошло не так — сфотографируйте растение и напишите нам: гарантия 14 дней.",
+  "Если растение пришло повреждённым — сфотографируйте его при получении и напишите нам.",
 ];
 
 export function OrderSuccess() {
@@ -33,7 +33,7 @@ export function OrderSuccess() {
     );
   }
 
-  const zone = ZONES.find((z) => z.key === order.zone);
+  const method = METHOD_BY_KEY.get(order.method);
 
   return (
     <div className="shell py-8 lg:py-12">
@@ -42,12 +42,13 @@ export function OrderSuccess() {
           <IconCheck className="size-7" />
         </span>
         <h1 className="font-display mt-4 text-3xl font-bold lg:text-4xl">
-          Заказ {order.id} принят
+          Бронь {order.id} оформлена
         </h1>
         <p className="text-ink-muted mt-3 max-w-2xl leading-relaxed">
-          Подтверждение и накладная уже ушли на {order.customer.email}. Мы позвоним по номеру{" "}
-          {order.customer.phone}, чтобы согласовать{" "}
-          {order.fulfilment === "pickup" ? "дату получения" : "дату доставки"}.
+          Ничего платить не нужно: бронь бесплатна. Подтверждение ушло на {order.customer.email},
+          а перед отправкой мы позвоним по номеру {order.customer.phone} — уточним состав заказа,
+          {order.fulfilment === "pickup" ? " дату получения" : " срок отправки"} и пришлём
+          номер отправления, когда посылка уйдёт.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <ButtonLink href={`/invoice/${encodeURIComponent(order.id)}`} size="l">
@@ -106,9 +107,10 @@ export function OrderSuccess() {
           ) : (
             <div className="text-sm">
               <p className="flex gap-2">
-                <IconTruck className="text-leaf size-5 shrink-0" /> {zone?.label}, {zone?.days}
+                <IconTruck className="text-leaf size-5 shrink-0" /> {method?.label}, {method?.days}
               </p>
-              <p className="text-ink-muted mt-2">{order.address}</p>
+              {order.address && <p className="text-ink-muted mt-2">{order.address}</p>}
+              <p className="text-ink-muted mt-2">Когда получить: {order.period}</p>
             </div>
           )}
 
@@ -125,7 +127,17 @@ export function OrderSuccess() {
             )}
             <div className="flex justify-between">
               <dt className="text-ink-muted">Доставка</dt>
-              <dd>{order.deliveryCost === 0 ? "бесплатно" : formatPrice(order.deliveryCost)}</dd>
+              <dd>
+                {order.deliveryByCarrier
+                  ? "по тарифу перевозчика"
+                  : order.deliveryCost === 0
+                    ? "бесплатно"
+                    : formatPrice(order.deliveryCost)}
+              </dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-ink-muted">Упаковка</dt>
+              <dd>{formatPrice(order.packaging)}</dd>
             </div>
             <div className="border-line mt-1 flex justify-between border-t pt-3 text-base font-semibold">
               <dt>Итого</dt>

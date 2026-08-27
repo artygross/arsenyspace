@@ -9,7 +9,7 @@ import { IconMinus, IconPlus, IconTrash } from "./icons";
 import { PromoField } from "./promo-field";
 import { alsoBuy, baseSlug, packLabel, CULTURE_BY_KEY } from "@/lib/catalog";
 import { cartTotals, hydrate, removeFromCart, setQty, useCartLines } from "@/lib/cart";
-import { FREE_FROM, PICKUP, quoteDelivery } from "@/lib/delivery";
+import { PACKAGING_PER_PLACE, PICKUP, deliveryDiscount } from "@/lib/delivery";
 import { formatPrice, plural } from "@/lib/format";
 import type { PromoResult } from "@/lib/promo";
 
@@ -33,14 +33,11 @@ export function CartView() {
   }
 
   const discount = promo?.ok ? promo.discount : 0;
-  const quote = quoteDelivery({
-    fulfilment: "delivery",
-    zone: "city",
-    weight: totals.weight,
-    subtotal: totals.subtotal - discount,
-    freeShipping: promo?.ok ? promo.freeShipping : false,
-  });
-  const total = totals.subtotal - discount + quote.cost;
+  // В корзине способ получения ещё не выбран, поэтому доставку не считаем и не обещаем:
+  // у половины способов её считает перевозчик. Сумма здесь — товары и упаковка.
+  const goods = totals.subtotal - discount;
+  const deliveryOff = deliveryDiscount(goods);
+  const total = goods + PACKAGING_PER_PLACE;
 
   return (
     <div className="shell py-8 lg:py-10">
@@ -70,7 +67,7 @@ export function CartView() {
                     </h2>
                     <p className="text-ink-muted mt-0.5 text-sm">{packLabel(product)}</p>
                     {product.availability === "preorder" && (
-                      <p className="text-sun mt-1 text-sm">Предзаказ · отгрузка с 5 сентября</p>
+                      <p className="text-sun mt-1 text-sm">Предзаказ · отправим, когда партия будет готова</p>
                     )}
                   </div>
                   <button
@@ -128,16 +125,14 @@ export function CartView() {
               {discount > 0 && promo?.ok && (
                 <Row label={`Промокод ${promo.code}`} value={`−${formatPrice(discount)}`} tone="berry" />
               )}
-              <Row
-                label="Доставка по городу"
-                value={quote.free ? "бесплатно" : formatPrice(quote.cost)}
-                tone={quote.free ? "leaf" : undefined}
-              />
+              <Row label="Упаковка" value={formatPrice(PACKAGING_PER_PLACE)} />
+              <Row label="Доставка" value="выберете при брони" />
             </dl>
 
-            {!quote.free && quote.toFree > 0 && (
+            {deliveryOff > 0 && (
               <p className="bg-leaf-soft text-leaf-deep mt-3 rounded-xl px-3 py-2 text-sm">
-                До бесплатной доставки не хватает {formatPrice(quote.toFree)}
+                Заказ больше {formatPrice(Math.floor(goods / 10000) * 10000)} — доставка со скидкой{" "}
+                {Math.round(deliveryOff * 100)} %
               </p>
             )}
 
@@ -147,11 +142,11 @@ export function CartView() {
             </div>
 
             <ButtonLink href="/checkout" size="l" className="mt-4 w-full">
-              Оформить заказ
+              Забронировать
             </ButtonLink>
             <p className="text-ink-muted mt-3 text-center text-xs">
-              Способ получения и точную стоимость доставки выберете на следующем шаге.
-              Самовывоз — 0 ₽, {PICKUP.hours.toLowerCase()}.
+              Без предоплаты. Способ получения выберете на следующем шаге, оплата — при получении.
+              Самовывоз — 0 ₽, {PICKUP.address}.
             </p>
             <Button
               variant="ghost"
@@ -172,7 +167,7 @@ export function CartView() {
         <SectionHeading
           eyebrow="Добавить к заказу"
           title="С этим часто берут"
-          text={`Доставка бесплатна от ${formatPrice(FREE_FROM)} — добор до порога обычно выгоднее, чем оплата доставки.`}
+          text="Саженцы едут в одной коробке: добрать сортов выгоднее, чем заказывать их отдельной отправкой."
         />
         <ProductGrid products={alsoBuy(items[0].product, 4)} />
       </section>

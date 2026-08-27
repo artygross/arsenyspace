@@ -121,10 +121,10 @@ export function Rating({ value, count, compact = false }: { value: number; count
 /* Один компонент на главной, в карточке, корзине и чекауте — docs/05 §12 */
 
 const TRUST = [
-  { icon: IconLeaf, title: "Свой питомник", text: "Выращиваем сами 12 лет, не перекупаем на базах" },
-  { icon: IconShield, title: "Гарантия 14 дней", text: "Не прижилось — заменим или вернём деньги по фото" },
-  { icon: IconBox, title: "Живая упаковка", text: "Термокороб, торфяной ком, влагоудерживающий гель" },
-  { icon: IconTruck, title: "Отгрузка в срок", text: "Собираем в день отправки, дату видно в карточке" },
+  { icon: IconShield, title: "Без предоплаты", text: "Оплата в пункте выдачи, посылку можно вскрыть до оплаты" },
+  { icon: IconLeaf, title: "Гарантия сортности", text: "В посылке тот сорт, который вы заказали" },
+  { icon: IconBox, title: "Живая упаковка", text: "Закрытая корневая в торфяном коме, коробка с амортизацией" },
+  { icon: IconTruck, title: "Отправка с треком", text: "СДЭК и Почта России, номер отправления присылаем" },
 ];
 
 export function TrustBlock({ compact = false }: { compact?: boolean }) {

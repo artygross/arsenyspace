@@ -99,26 +99,26 @@ ok("промокод ВЕСНА15 применяется", await page.getByText(
 await page.screenshot({ path: `${OUT}/flow-cart-promo.png` });
 
 /* ---------- 7. Чекаут ---------- */
-await page.getByRole("link", { name: "Оформить заказ" }).click();
+await page.getByRole("link", { name: "Забронировать" }).click();
 await page.waitForURL("**/checkout");
-await page.getByRole("button", { name: "Оформить заказ" }).click();
+await page.getByRole("button", { name: /Забронировать/ }).click();
 ok("пустая форма не отправляется и подсвечивает поле", await page.getByText("Как к вам обращаться?").isVisible());
 ok("фокус переходит на первое ошибочное поле", await page.locator('[name="name"]').evaluate((el) => el === document.activeElement));
 
-await page.getByRole("button", { name: /Самовывоз/ }).click();
+await page.getByRole("button", { name: /Самовывоз из питомника/ }).click();
 ok("самовывоз убирает поле адреса", (await page.locator('[name="address"]').count()) === 0);
 ok("самовывоз обнуляет доставку", await page.getByText("бесплатно").first().isVisible());
-await page.getByRole("button", { name: "Доставка", exact: false }).first().click();
+await page.getByRole("button", { name: /Курьером на адрес/ }).click();
 
 await page.locator('[name="name"]').fill("Ольга Морозова");
 await page.locator('[name="phone"]').fill("+7 900 111-22-33");
 await page.locator('[name="email"]').fill("olga@example.com");
 await page.locator('[name="address"]').fill("Тула, ул. Садовая, д. 4, кв. 12");
 await page.screenshot({ path: `${OUT}/flow-checkout.png` });
-await page.getByRole("button", { name: "Оформить заказ" }).click();
+await page.getByRole("button", { name: /Забронировать/ }).click();
 await page.waitForURL("**/checkout/success**");
 const orderHeading = await page.locator("h1").innerText();
-ok("заказ оформляется и получает номер", /Заказ СГ-\d+ принят/.test(orderHeading), orderHeading);
+ok("бронь оформляется и получает номер", /Бронь СГ-\d+ оформлена/.test(orderHeading), orderHeading);
 await settle(cartBadge, { state: "detached" });
 ok("корзина очищается после заказа", (await cartBadge.count()) === 0);
 
@@ -215,7 +215,17 @@ const mpage = await mobile.newPage();
 mpage.on("pageerror", (e) => pageErrors.push(e.message));
 await mpage.goto(BASE + "/");
 await mpage.getByRole("button", { name: "Открыть меню" }).click();
-ok("мобильное меню открывается", await mpage.getByRole("banner").getByRole("link", { name: "Весь каталог" }).isVisible());
+const mobileMenu = mpage.getByTestId("mobile-menu");
+await settle(mobileMenu);
+ok("мобильное меню открывается", await mobileMenu.getByRole("link", { name: "Весь каталог" }).isVisible());
+// Шторка должна накрывать экран: у шапки backdrop-blur, и вложенная в неё шторка
+// получала размеры шапки — меню открывалось полоской поверх страницы
+const menuBox = await mobileMenu.boundingBox();
+ok(
+  "мобильное меню накрывает экран целиком",
+  Boolean(menuBox) && menuBox.height >= 800 && menuBox.width >= 390,
+  menuBox ? `${Math.round(menuBox.width)}×${Math.round(menuBox.height)}` : "нет блока",
+);
 await mpage.screenshot({ path: `${OUT}/flow-mobile-menu.png` });
 
 await mpage.goto(BASE + "/catalog");

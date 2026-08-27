@@ -1,6 +1,5 @@
 import { CULTURE_BY_KEY, RIPENING_LABEL, type Product } from "@/lib/catalog";
 import { COMPANY } from "@/lib/content";
-import { PICKUP } from "@/lib/delivery";
 import type { Article } from "@/lib/articles";
 
 const SITE = "https://polesie.example";
@@ -29,9 +28,13 @@ export function OrganizationLd() {
         telephone: COMPANY.phone,
         email: COMPANY.email,
         sameAs: [COMPANY.vk],
-        address: { "@type": "PostalAddress", streetAddress: PICKUP.address, addressCountry: "RU" },
-        openingHours: "Mo-Su 09:00-18:00",
-        foundingDate: String(COMPANY.since),
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "д. Воронкино, ул. Луговая, 36",
+          addressLocality: "Ломоносовский район",
+          addressRegion: "Ленинградская область",
+          addressCountry: "RU",
+        },
       }}
     />
   );
@@ -101,18 +104,24 @@ export function ProductLd({ product }: { product: Product }) {
           url: `${SITE}/product/${product.slug}`,
           seller: { "@type": "Organization", name: COMPANY.name },
         },
-        aggregateRating: {
-          "@type": "AggregateRating",
-          ratingValue: product.rating,
-          reviewCount: product.reviewCount,
-        },
-        review: product.reviews.slice(0, 3).map((r) => ({
-          "@type": "Review",
-          author: { "@type": "Person", name: r.author },
-          datePublished: r.date,
-          reviewBody: r.text,
-          reviewRating: { "@type": "Rating", ratingValue: r.rating },
-        })),
+        // Рейтинг и отзывы попадают в разметку только когда они настоящие:
+        // размечать несуществующие оценки — это и обман покупателя, и нарушение правил Google
+        ...(product.reviewCount > 0
+          ? {
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: product.rating,
+                reviewCount: product.reviewCount,
+              },
+              review: product.reviews.slice(0, 3).map((r) => ({
+                "@type": "Review",
+                author: { "@type": "Person", name: r.author },
+                datePublished: r.date,
+                reviewBody: r.text,
+                reviewRating: { "@type": "Rating", ratingValue: r.rating },
+              })),
+            }
+          : {}),
       }}
     />
   );
