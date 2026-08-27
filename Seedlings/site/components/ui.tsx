@@ -130,13 +130,17 @@ const TRUST = [
 export function TrustBlock({ compact = false }: { compact?: boolean }) {
   const items = compact ? TRUST.slice(0, 3) : TRUST;
   return (
-    <ul className={`grid gap-3 ${compact ? "sm:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-4"}`}>
+    // Компактный блок живёт в узкой колонке корзины и чекаута. Три колонки там раскладывались
+    // по ширине экрана, а не колонки: на планшете каждая получала ~90 px, и подписи вылезали
+    // за карточку — их закрывала соседняя. В боковой колонке блок идёт списком.
+    <ul className={`grid gap-3 ${compact ? "" : "sm:grid-cols-2 lg:grid-cols-4"}`}>
       {items.map(({ icon: Icon, ...t }) => (
         <li key={t.title} className="card-surface flex gap-3 p-4">
           <span className="bg-leaf-soft text-leaf-deep flex size-10 shrink-0 items-center justify-center rounded-full">
             <Icon className="size-5" />
           </span>
-          <span>
+          {/* min-w-0: без него флекс-элемент не сжимается уже своего содержимого и текст вылезает */}
+          <span className="min-w-0">
             <span className="block text-sm font-semibold">{t.title}</span>
             <span className="text-ink-muted mt-0.5 block text-sm leading-snug">{t.text}</span>
           </span>

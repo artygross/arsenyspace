@@ -50,15 +50,15 @@ export function SiteHeader() {
       <div className="shell flex h-16 items-center gap-3 lg:h-20 lg:gap-6">
         <button
           type="button"
-          className="text-ink -ml-1 flex size-10 items-center justify-center lg:hidden"
+          className="text-ink -ml-1 flex size-11 items-center justify-center lg:hidden"
           onClick={() => open("menu")}
           aria-label="Открыть меню"
         >
-          <IconMenu className="size-6" />
+          <IconMenu className="size-7" />
         </button>
 
         <Link href="/" className="flex items-center gap-2" aria-label={`${COMPANY.name} — на главную`}>
-          <Logo className="h-8 w-auto lg:h-9" priority />
+          <Logo className="h-11 w-auto lg:h-12" priority />
         </Link>
 
         <nav className="ml-4 hidden items-center gap-5 lg:flex">
@@ -124,33 +124,33 @@ export function SiteHeader() {
         <div className="ml-auto flex items-center gap-1">
           <button
             type="button"
-            className="hover:text-leaf flex size-10 items-center justify-center"
+            className="hover:text-leaf flex size-11 items-center justify-center"
             onClick={() => open("search")}
             aria-label="Поиск по каталогу"
           >
-            <IconSearch className="size-5" />
+            <IconSearch className="size-6" />
           </button>
           <Link
             href="/favorites"
-            className="hover:text-leaf relative flex size-10 items-center justify-center"
+            className="hover:text-leaf relative flex size-11 items-center justify-center"
             aria-label={`Избранное, ${favorites.length} ${plural(favorites.length, "товар", "товара", "товаров")}`}
           >
-            <IconHeart className="size-5" />
+            <IconHeart className="size-6" />
             {favorites.length > 0 && <Counter value={favorites.length} />}
           </Link>
           <Link
             href="/account"
-            className="hover:text-leaf hidden size-10 items-center justify-center lg:flex"
+            className="hover:text-leaf hidden size-11 items-center justify-center lg:flex"
             aria-label="Личный кабинет"
           >
-            <IconUser className="size-5" />
+            <IconUser className="size-6" />
           </Link>
           <Link
             href="/cart"
-            className="hover:text-leaf relative flex size-10 items-center justify-center"
+            className="hover:text-leaf relative flex size-11 items-center justify-center"
             aria-label={`Корзина, ${cartCount} ${plural(cartCount, "товар", "товара", "товаров")}`}
           >
-            <IconCart className="size-5" />
+            <IconCart className="size-6" />
             {cartCount > 0 && <Counter value={cartCount} />}
           </Link>
         </div>
@@ -164,7 +164,7 @@ export function SiteHeader() {
 
 function Counter({ value }: { value: number }) {
   return (
-    <span className="bg-leaf absolute top-1 right-0.5 min-w-4.5 rounded-full px-1 text-center text-[11px] leading-4.5 font-semibold text-white">
+    <span className="bg-leaf absolute top-1 right-0 min-w-5 rounded-full px-1 text-center text-xs leading-5 font-semibold text-white">
       {value}
     </span>
   );
@@ -174,7 +174,7 @@ function MobileMenu({ onClose, counts }: { onClose: () => void; counts: Record<s
   return (
     <div className="bg-cream fixed inset-0 z-50 flex flex-col lg:hidden">
       <div className="shell flex h-16 items-center justify-between">
-        <Logo className="h-8 w-auto" />
+        <Logo className="h-11 w-auto" />
         <button type="button" onClick={onClose} aria-label="Закрыть меню" className="flex size-10 items-center justify-center">
           <IconClose className="size-6" />
         </button>

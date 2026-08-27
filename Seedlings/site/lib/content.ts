@@ -3,14 +3,12 @@
 export const COMPANY = {
   name: "Полесье",
   /**
-   * Эмблема клиента. `logo` — полная, с кольцевой надписью «САЖЕНЦЫ МАЛИНЫ И КЛУБНИКИ»;
-   * `logoMark` — тот же рисунок без кольца, для мелких размеров: ниже 40 px надпись
-   * превращается в шум (docs/05-ui-system.md §11). Оба файла пересобираются из
-   * `Seedlings/assets/logo-source.png` командой `node Seedlings/scripts/logo-prep.mjs`.
-   * `null` в обоих полях — рисуется временный знак.
+   * Эмблема клиента — целиком, вместе с кольцевой надписью и носиком лейки.
+   * Файл квадратный, с прозрачными полями, и нигде не обрезается (решение D-28).
+   * Пересобирается из `Seedlings/assets/logo-source.png` командой
+   * `node Seedlings/scripts/logo-prep.mjs`. `null` — рисуется временный знак.
    */
   logo: "/logo/polesie.png" as string | null,
-  logoMark: "/logo/polesie-mark.png" as string | null,
   /** Показывать ли название текстом рядом со знаком */
   logoWithWordmark: true,
   legal: "КФХ Полесье",

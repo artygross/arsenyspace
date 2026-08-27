@@ -2,24 +2,20 @@ import Image from "next/image";
 import { COMPANY } from "@/lib/content";
 
 /**
- * Логотип. Знак берётся из `COMPANY.logo`; в интерфейсе высота знака 32–40 px, поэтому
- * по умолчанию рисуется вариант без кольцевой надписи (`COMPANY.logoMark`) —
- * на такой высоте кольцо превращается в шум. `full` включает полную эмблему:
- * страница «О питомнике» и шапка накладной, где места достаточно.
- * Пока файлов клиента нет — временная концепция из docs/05-ui-system.md §11.
+ * Логотип. Эмблема клиента показывается целиком: файл квадратный, с прозрачными полями,
+ * и вписывается `object-contain` — она не обрезается ни в каком размере (решение D-28).
+ * Пока файла клиента нет — временная концепция из docs/05-ui-system.md §11.
  */
 export function Logo({
   className = "",
-  full = false,
   priority = false,
   wordmark = COMPANY.logoWithWordmark,
 }: {
   className?: string;
-  full?: boolean;
   priority?: boolean;
   wordmark?: boolean;
 }) {
-  const src = full ? COMPANY.logo : (COMPANY.logoMark ?? COMPANY.logo);
+  const src = COMPANY.logo;
 
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
@@ -30,7 +26,7 @@ export function Logo({
             /* Подпись рядом со знаком повторяет название — тогда знак для скринридера декоративен */
             alt={wordmark ? "" : COMPANY.name}
             fill
-            sizes={full ? "224px" : "48px"}
+            sizes="224px"
             className="object-contain"
             priority={priority}
           />

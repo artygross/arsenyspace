@@ -51,7 +51,7 @@ export function InvoiceView({ id }: { id: string }) {
             <p className="text-ink-muted mt-1 text-sm">от {formatDate(order.createdAt)}</p>
           </div>
           <div className="flex items-start gap-3 text-sm">
-            <Logo full wordmark={false} className="h-14 w-auto shrink-0" />
+            <Logo wordmark={false} className="h-16 w-auto shrink-0" />
             <div>
               <p className="font-semibold">{COMPANY.name}</p>
               <p className="text-ink-muted">{COMPANY.legal}</p>

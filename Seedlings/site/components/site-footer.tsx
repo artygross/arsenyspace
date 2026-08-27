@@ -21,7 +21,7 @@ export function SiteFooter() {
     <footer className="bg-surface border-line mt-16 border-t no-print">
       <div className="shell grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-5">
         <div>
-          <Logo className="h-9 w-auto" />
+          <Logo className="h-12 w-auto" />
           <p className="text-ink-muted mt-4 text-sm leading-relaxed">
             Питомник рассады и саженцев. Выращиваем сами с 2014 года, отправляем по всей России
             и отдаём на самовывоз в Тульской области.

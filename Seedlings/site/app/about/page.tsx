@@ -16,7 +16,7 @@ export default function AboutPage() {
     <div className="shell pb-16">
       <Breadcrumbs items={[{ href: "/", label: "Главная" }, { label: "О питомнике" }]} />
       <div className="flex flex-wrap items-center gap-5">
-        <Logo full wordmark={false} className="h-24 w-auto lg:h-28" />
+        <Logo wordmark={false} className="h-28 w-auto lg:h-32" />
         <h1 className="font-display text-3xl leading-tight font-bold lg:text-4xl">
           {COMPANY.years} лет, {COMPANY.varieties} сортов, {COMPANY.orders} заказов
         </h1>
