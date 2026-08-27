@@ -11,6 +11,25 @@ export const metadata: Metadata = {
     "КФХ Полесье — питомник саженцев в Ломоносовском районе Ленинградской области. Малина, клубника, смородина, ежевика, голубика. Бронь без предоплаты, оплата при получении, отправка по России.",
 };
 
+const STEPS = [
+  {
+    title: "Отбираем сорт",
+    text: "Ведём маточник и выбираем поставщиков: сорт должен показать урожай и вкус, прежде чем попадёт в каталог.",
+  },
+  {
+    title: "Проверяем каждое растение",
+    text: "Отбор идёт вручную перед отгрузкой. Слабые и подозрительные саженцы в заказ не попадают.",
+  },
+  {
+    title: "Собираем и пакуем",
+    text: "В день отправки, в коробку с амортизацией по стенкам. Упаковка — 100 ₽ за место.",
+  },
+  {
+    title: "Ведём до получения",
+    text: "Созваниваемся перед отправкой, присылаем трек-номер и остаёмся на связи после получения.",
+  },
+];
+
 export default function AboutPage() {
   return (
     <div className="shell pb-16">
@@ -32,48 +51,51 @@ export default function AboutPage() {
         <TrustBlock />
       </div>
 
-      <section className="mt-12 grid gap-6 lg:grid-cols-2">
-        <div>
-          <SectionHeading title="Как мы работаем" />
-          <ol className="grid gap-3">
-            {[
-              "Ведём маточник и отбираем поставщиков: сорт должен показать урожай и вкус, прежде чем попадёт в каталог.",
-              "Отбираем растения вручную перед отгрузкой: слабые и подозрительные в заказ не идут.",
-              "Собираем заказ в день отправки и пакуем в коробку с амортизацией — 100 ₽ за место.",
-              "Созваниваемся перед отправкой, присылаем трек-номер и остаёмся на связи после получения.",
-            ].map((step, i) => (
-              <li key={step} className="card-surface flex gap-3 p-4">
-                <span className="bg-leaf-soft text-leaf-deep flex size-8 shrink-0 items-center justify-center rounded-full font-semibold">
-                  {i + 1}
-                </span>
-                <p className="text-sm leading-relaxed">{step}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
+      {/* Две колонки разной высоты оставляли под контактами пустоту, а шаги в узкой колонке
+          ломались на две строки каждый. Развели на две полосы во всю ширину: шаги — процессом
+          в четыре колонки, контакты — плашкой */}
+      <section className="mt-14">
+        <SectionHeading title="Как мы работаем" />
+        <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {STEPS.map((step, i) => (
+            <li key={step.title} className="card-surface flex flex-col p-5">
+              <span className="font-display text-leaf/35 text-4xl leading-none font-bold">
+                {i + 1}
+              </span>
+              <h3 className="mt-3 font-semibold">{step.title}</h3>
+              <p className="text-ink-muted mt-1.5 text-sm leading-relaxed">{step.text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
 
-        <div>
-          <SectionHeading title="Контакты" />
-          <ul className="card-surface divide-line divide-y">
-            <li className="flex gap-3 px-5 py-4">
+      <section className="mt-14">
+        <SectionHeading title="Контакты" />
+        <div className="bg-sand rounded-[28px] p-6 lg:p-8">
+          <ul className="grid gap-6 md:grid-cols-3">
+            <li className="flex gap-3">
               <IconPin className="text-leaf size-5 shrink-0" />
               <span>
-                <span className="block font-medium">Питомник и пункт самовывоза</span>
-                <span className="text-ink-muted text-sm">{PICKUP.address}</span>
+                <span className="block font-medium">Питомник и самовывоз</span>
+                <span className="text-ink-muted mt-1 block text-sm leading-relaxed">
+                  {PICKUP.address}
+                </span>
               </span>
             </li>
-            <li className="flex gap-3 px-5 py-4">
+            <li className="flex gap-3">
               <IconClock className="text-leaf size-5 shrink-0" />
               <span>
                 <span className="block font-medium">Часы работы</span>
-                <span className="text-ink-muted text-sm">{PICKUP.hours}</span>
+                <span className="text-ink-muted mt-1 block text-sm leading-relaxed">
+                  {PICKUP.hours}. Предупредите о приезде — соберём заказ к вашему появлению.
+                </span>
               </span>
             </li>
-            <li className="flex gap-3 px-5 py-4">
+            <li className="flex gap-3">
               <IconPhone className="text-leaf size-5 shrink-0" />
               <span>
                 <span className="block font-medium">Телефон и почта</span>
-                <a href={COMPANY.phoneHref} className="hover:text-leaf text-sm">
+                <a href={COMPANY.phoneHref} className="hover:text-leaf mt-1 block text-sm">
                   {COMPANY.phone}
                 </a>
                 <a href={`mailto:${COMPANY.email}`} className="hover:text-leaf block text-sm">
@@ -82,9 +104,16 @@ export default function AboutPage() {
               </span>
             </li>
           </ul>
-          <ButtonLink href={COMPANY.vk} variant="secondary" className="mt-4">
-            Сообщество ВКонтакте
-          </ButtonLink>
+
+          <div className="border-line mt-6 flex flex-wrap items-center justify-between gap-4 border-t pt-6">
+            <p className="text-ink-muted max-w-xl text-sm leading-relaxed">
+              Быстрее всего отвечаем во ВКонтакте — там же в обсуждениях лежат отзывы покупателей
+              за несколько сезонов.
+            </p>
+            <ButtonLink href={COMPANY.vk} variant="secondary" className="shrink-0">
+              Сообщество ВКонтакте
+            </ButtonLink>
+          </div>
         </div>
       </section>
     </div>
