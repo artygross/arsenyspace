@@ -253,7 +253,7 @@ export default function HomePage() {
             <p className="eyebrow">Акция месяца</p>
             <h2 className="font-display mt-2 text-2xl font-bold">Весенняя цена до 30 сентября</h2>
             <p className="text-ink-muted mt-2 max-w-2xl">
-              Скидка 15 % на всю клубнику при заказе от 3 упаковок. Промокод суммируется со скидками
+              Скидка 15 % на всю малину при заказе от 3 саженцев. Промокод суммируется со скидками
               на распродаже.
             </p>
           </div>

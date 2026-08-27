@@ -3,14 +3,24 @@
 Кладите файлы сюда с именем по слагу сорта:
 
 ```
-klubnika-polka.jpg          главное фото
-klubnika-polka-2.jpg        дополнительные кадры
-klubnika-polka-3.jpg
-malina-karamelka.jpg
+smorodina-zks-titaniya.jpg      главное фото
+smorodina-zks-titaniya-2.jpg    дополнительные кадры
+smorodina-zks-titaniya-3.jpg
+malina-remontantnaya-karamelka.jpg
 ```
 
-Слаг сорта виден в адресе карточки: `/product/klubnika-polka` → `klubnika-polka`.
-Полный список всех 54 сортов с готовыми именами файлов — в `slugs.md` рядом.
+Слаг сорта виден в адресе карточки: `/product/smorodina-zks-titaniya` → `smorodina-zks-titaniya`.
+Полный список сортов с готовыми именами файлов — в `Seedlings/docs/12-assortment.md`.
+
+**Проще не переименовывать вручную.** Положите снимки как есть в
+`Seedlings/assets/photos/<Раздел>/<Сорт>/` и запустите:
+
+```bash
+node Seedlings/scripts/photo-intake.mjs
+```
+
+Скрипт сам развернёт кадр по EXIF, обрежет до 4:5, ужмёт и разложит сюда под нужными именами.
+Папки под все сорта уже созданы.
 
 Что снимать на сорт (docs/05-ui-system.md §10): растение целиком в фасовке,
 корневая система крупно, урожай. Кадр с корневой системой — главный аргумент доверия.
@@ -32,3 +42,6 @@ node Seedlings/scripts/photo-manifest.mjs
 
 Скрипт пересоберёт `Seedlings/site/lib/photos.generated.ts`, и фото подхватятся
 в каталоге, карточке, корзине и сравнении. Где фото нет — остаётся иллюстрация.
+
+Сейчас у всех сортов лежат примеры-заглушки с подписью «пример фото»
+(`node Seedlings/scripts/photo-samples.mjs`). Настоящий снимок с тем же именем их заменяет.

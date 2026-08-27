@@ -31,30 +31,34 @@ page.on("pageerror", (e) => pageErrors.push(e.message));
 
 /* ---------- 1. Главная → каталог культуры ---------- */
 await page.goto(BASE + "/");
-await page.locator('a[href="/catalog/klubnika"]').first().click();
-await page.waitForURL("**/catalog/klubnika**");
-ok("плитка культур ведёт в каталог культуры", page.url().includes("/catalog/klubnika"));
+await page.locator('a[href="/catalog/malina-remontantnaya"]').first().click();
+await page.waitForURL("**/catalog/malina-remontantnaya**");
+ok("плитка разделов ведёт в каталог раздела", page.url().includes("/catalog/malina-remontantnaya"));
 
 /* ---------- 2. Фасеты: отклик и URL ---------- */
+// Фасет проверяем в летней малине: там есть ранние, средние и поздние сорта.
+// В разделе «Малина ремонтантная» все сорта ремонтантные, и правильный фильтр
+// там ничего не сузит — проверка ловила бы не дефект, а состав раздела.
+await page.goto(BASE + "/catalog/malina-letnyaya");
 const totalBefore = Number((await page.locator("text=/^\\d+ сорт/").first().innerText()).split(" ")[0]);
-const facet = page.locator('label[for="ripening-everbearing"]');
+const facet = page.locator('label[for="ripening-early"]');
 await facet.click();
-ok("чекбокс фасета отмечается сразу", await page.locator("#ripening-everbearing").isChecked());
-await page.waitForURL("**ripening=everbearing**");
+ok("чекбокс фасета отмечается сразу", await page.locator("#ripening-early").isChecked());
+await page.waitForURL("**ripening=early**");
 const totalAfter = Number((await page.locator("text=/^\\d+ сорт/").first().innerText()).split(" ")[0]);
 ok("фасет пишется в URL и сужает выдачу", totalAfter > 0 && totalAfter < totalBefore, `${totalBefore} → ${totalAfter}`);
 await page.screenshot({ path: `${OUT}/flow-facets.png` });
 
 /* ---------- 3. Чипсы и сброс ---------- */
-await page.getByRole("button", { name: /Ремонтантный/ }).click();
+await page.getByRole("button", { name: /Ранний/ }).click();
 await page.waitForURL((u) => !u.search.includes("ripening"));
 ok("чипс снимает фильтр", !page.url().includes("ripening"));
 
 /* ---------- 4. Поиск ---------- */
 await page.getByRole("button", { name: "Поиск по каталогу" }).click();
 const searchInput = page.getByLabel("Поисковый запрос");
-await searchInput.fill("полка");
-const suggestion = page.locator("a", { hasText: "Полка" }).first();
+await searchInput.fill("полька");
+const suggestion = page.locator("a", { hasText: "Полька" }).first();
 await settle(suggestion);
 ok("автокомплит показывает подсказки", await suggestion.isVisible());
 await searchInput.press("Enter");
@@ -62,7 +66,7 @@ await page.waitForURL("**/search?q=**");
 ok("поиск открывает страницу результатов", (await page.locator("article").count()) > 0);
 
 /* ---------- 5. Избранное ---------- */
-await page.goto(BASE + "/catalog/klubnika");
+await page.goto(BASE + "/catalog/malina-remontantnaya");
 await page.getByRole("button", { name: "В избранное" }).first().click();
 const favBadge = page.locator("header a[href='/favorites'] span");
 await settle(favBadge.filter({ hasText: "1" }));
@@ -73,7 +77,7 @@ await settle(favCards.first());
 ok("избранное сохранилось между страницами", (await favCards.count()) === 1);
 
 /* ---------- 6. Корзина и промокод ---------- */
-await page.goto(BASE + "/catalog/klubnika");
+await page.goto(BASE + "/catalog/malina-remontantnaya");
 // Кнопка на 1.5 с превращается в «Добавлено», и .first() переезжает на соседнюю карточку.
 // Ждём факт — счётчик в шапке, а не таймер.
 const cartBadge = page.locator("header a[href='/cart'] span");
@@ -91,7 +95,7 @@ ok("несуществующий промокод даёт ошибку", await 
 
 await page.getByLabel("Промокод").fill("ВЕСНА15");
 await page.getByRole("button", { name: "Применить" }).click();
-ok("промокод ВЕСНА15 применяется", await page.getByText("−15 % на клубнику").isVisible());
+ok("промокод ВЕСНА15 применяется", await page.getByText("−15 % на малину").isVisible());
 await page.screenshot({ path: `${OUT}/flow-cart-promo.png` });
 
 /* ---------- 7. Чекаут ---------- */
@@ -135,7 +139,7 @@ await settle(cartBadge.filter({ hasText: "3" }));
 ok("повтор заказа кладёт позиции в корзину", (await cartBadge.count()) > 0 && (await cartBadge.innerText()) === "3");
 
 /* ---------- 10. Несезонный товар ---------- */
-await page.goto(BASE + "/product/ovoshchnaya-rassada-byche-serdtse");
+await page.goto(BASE + "/product/klubnika-frigo-kleri");
 const purchaseCard = page.locator("div").filter({ has: page.locator("form#notify") }).last();
 ok("вне сезона в блоке покупки нет кнопки корзины", (await purchaseCard.getByRole("button", { name: "В корзину" }).count()) === 0);
 await page.locator('input[type="email"]').first().fill("olga@example.com");
@@ -143,7 +147,7 @@ await page.getByRole("button", { name: "Сообщить" }).click();
 ok("подписка на поступление подтверждается", await page.getByText(/вернётся в продажу/).isVisible());
 
 /* ---------- 11. Фасовка меняет цену ---------- */
-await page.goto(BASE + "/product/klubnika-polka");
+await page.goto(BASE + "/product/klubnika-zks-aprika");
 const priceBefore = await page.getByTestId("pdp-price").innerText();
 await page.locator('input[name="variant"]').nth(1).check();
 await settleFor((before) => document.querySelector('[data-testid="pdp-price"]')?.textContent !== before, priceBefore);
@@ -152,7 +156,7 @@ ok("выбор фасовки пересчитывает цену", priceBefore 
 
 
 /* ---------- 13. Сравнение сортов ---------- */
-await page.goto(BASE + "/catalog/klubnika");
+await page.goto(BASE + "/catalog/malina-remontantnaya");
 // Кнопка после клика меняет подпись на «В сравнении», и nth(0) переезжает на следующую
 // карточку. Ждём факт смены подписи: без этого на медленной гидрации второй клик попадает
 // по той же карточке и снимает выбор.
@@ -181,7 +185,7 @@ await page.getByText("Сравнивать пока нечего").waitFor();
 ok("сравнение очищается", await page.getByText("Сравнивать пока нечего").isVisible());
 
 /* ---------- 14. Подборка одной кнопкой ---------- */
-await page.goto(BASE + "/collection/klubnika-na-vsyo-leto");
+await page.goto(BASE + "/collection/malina-na-vsyo-leto");
 const collectionItems = await page.locator("ol > li").count();
 await page.getByRole("button", { name: "Взять всю подборку" }).click();
 await page.getByRole("button", { name: "Подборка в корзине" }).waitFor();
@@ -193,12 +197,12 @@ await page.goto(BASE + "/care");
 await page.getByRole("link", { name: "Обрезка ремонтантной малины" }).click();
 await page.waitForURL("**/care/obrezka-remontantnoy-maliny");
 ok("статья открывается", (await page.locator("h1").innerText()).includes("Обрезка"));
-await page.getByRole("link", { name: "Смотреть сорта малины" }).click();
-await page.waitForURL("**/catalog/malina");
-ok("из статьи есть путь в каталог культуры", page.url().endsWith("/catalog/malina"));
+await page.getByRole("link", { name: "Смотреть сорта ремонтантной малины" }).click();
+await page.waitForURL("**/catalog/malina-remontantnaya");
+ok("из статьи есть путь в каталог раздела", page.url().endsWith("/catalog/malina-remontantnaya"));
 
 /* ---------- 16. Микроразметка ---------- */
-await page.goto(BASE + "/product/klubnika-polka");
+await page.goto(BASE + "/product/klubnika-zks-aprika");
 const ld = await page.locator('script[type="application/ld+json"]').allTextContents();
 const types = ld.map((raw) => JSON.parse(raw)["@type"]);
 ok("на карточке есть разметка Product и BreadcrumbList", types.includes("Product") && types.includes("BreadcrumbList"), types.join(", "));

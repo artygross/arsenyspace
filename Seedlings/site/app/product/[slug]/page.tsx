@@ -8,13 +8,14 @@ import { Badge, Breadcrumbs, Rating, SectionHeading, TrustBlock, productBadges }
 import { BreadcrumbsLd, ProductLd } from "@/components/structured-data";
 import { IconClock, IconPin, IconShield, IconSnow, IconSun, IconTruck } from "@/components/icons";
 import {
-  CULTURE_BY_KEY,
-  RIPENING_LABEL,
   CONTAINER_LABEL,
+  CULTURE_BY_KEY,
   MONTHS,
+  RIPENING_LABEL,
   alsoBuy,
   getProduct,
   getProducts,
+  hardinessLabel,
   plantingLabel,
   related,
 } from "@/lib/catalog";
@@ -49,7 +50,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
     { label: "Тип", value: product.kind },
     { label: "Срок созревания", value: RIPENING_LABEL[product.ripening] },
     ...(product.hardiness < 0
-      ? [{ label: "Зимостойкость", value: `до ${product.hardiness} °C` }]
+      ? [{ label: "Зимостойкость", value: `до ${hardinessLabel(product.hardiness)}` }]
       : [{ label: "Условия", value: "Теплолюбивая культура, высадка после заморозков" }]),
     { label: "Урожайность", value: product.yieldPerBush },
     { label: "Размер плода", value: product.fruitSize },
@@ -175,7 +176,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
             {product.hardiness < 0 && (
               <p className="flex items-center gap-2">
                 <IconSnow className="text-leaf size-5" />
-                Переносит мороз до {product.hardiness} °C
+                Переносит мороз до {hardinessLabel(product.hardiness)}
               </p>
             )}
           </div>

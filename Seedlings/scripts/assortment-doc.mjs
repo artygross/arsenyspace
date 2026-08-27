@@ -1,0 +1,105 @@
+/**
+ * Пересобирает docs/12-assortment.md из самого каталога.
+ *
+ * Документ — точка сверки ассортимента с клиентом, и он не должен расходиться с кодом,
+ * поэтому берётся не из отдельного списка, а из `site/lib/catalog.ts`.
+ * Правки ассортимента вносятся в каталог, потом запускается этот скрипт.
+ *
+ * Запуск: node Seedlings/scripts/assortment-doc.mjs
+ */
+import fs from "node:fs";
+import path from "node:path";
+import {
+  CULTURES,
+  getProducts,
+  CONTAINER_LABEL,
+  RIPENING_LABEL,
+  AVAILABILITY_LABEL,
+} from "../site/lib/catalog.ts";
+
+const root = path.resolve(import.meta.dirname, "..");
+const out = path.join(root, "docs/12-assortment.md");
+const products = getProducts();
+const L = [];
+
+const material = (key) => {
+  const list = products.filter((p) => p.culture === key);
+  const pack = list[0];
+  const label = CONTAINER_LABEL[pack.container];
+  return pack.packSize === 1 ? label : `${label}, упаковка ${pack.packSize} шт.`;
+};
+
+L.push("# 12 — Ассортимент: разделы и сорта");
+L.push("");
+L.push("Список получен от клиента 27 августа 2026. **Других разделов не будет** — всё, чего нет");
+L.push("в этой таблице, из каталога убрано (решение D-30).");
+L.push("");
+L.push("Файл собирается из каталога командой `node Seedlings/scripts/assortment-doc.mjs` —");
+L.push("руками не правится. Ассортимент меняется в `site/lib/catalog.ts`, документ пересобирается.");
+L.push("");
+L.push("## Как устроены разделы и подразделы");
+L.push("");
+L.push("- **Раздел** — верхний уровень каталога и пункт меню, адрес `/catalog/<слаг раздела>`.");
+L.push("- **Подраздел отдельной страницей не делается.** Внутри раздела работают фасеты: тип сорта,");
+L.push("  срок созревания, зимостойкость, фасовка. «Малина ремонтантная → бесшипные» получается");
+L.push("  фильтром и шарящейся ссылкой, а не ещё одним уровнем меню (решение D-08).");
+L.push("- **Слаг сорта** — адрес карточки `/product/<слаг>`, имя файла фотографии `<слаг>.jpg`");
+L.push("  и имя папки приёмки в `Seedlings/assets/photos/`.");
+L.push("");
+L.push("## Сводка");
+L.push("");
+L.push("| Раздел | Слаг | Сортов | Посадочный материал |");
+L.push("|---|---|---|---|");
+for (const c of CULTURES) {
+  const n = products.filter((p) => p.culture === c.key).length;
+  L.push(`| ${c.name} | \`${c.slug}\` | ${n} | ${material(c.key)} |`);
+}
+L.push(`| **Итого** | | **${products.length}** | |`);
+L.push("");
+L.push("## Изменения после согласования");
+L.push("");
+L.push("- 27 августа 2026 — по просьбе клиента в «Смородину ЗКС» добавлен саженец **Клауссоновская**.");
+L.push("  В разделе стало 5 сортов, во всём каталоге — 34.");
+L.push("");
+
+for (const c of CULTURES) {
+  const list = products.filter((p) => p.culture === c.key);
+  L.push(`## ${c.name}`);
+  L.push("");
+  L.push(`Адрес раздела: \`/catalog/${c.slug}\`. Посадочный материал: ${material(c.key)}.`);
+  L.push("");
+  L.push("| № | Сорт | Тип | Срок | Цена, ₽ | Наличие | Слаг карточки и файла фото |");
+  L.push("|---|---|---|---|---|---|---|");
+  list.forEach((p, i) =>
+    L.push(
+      `| ${i + 1} | ${p.name} | ${p.kind} | ${RIPENING_LABEL[p.ripening]} | ${p.price} | ${AVAILABILITY_LABEL[p.availability]} | \`${p.slug}\` |`,
+    ),
+  );
+  L.push("");
+}
+
+L.push("## Что уточнить у клиента");
+L.push("");
+L.push("- 🔴 Цены, остатки и сроки отгрузки по каждому сорту — сейчас демонстрационные.");
+L.push("- 🔴 Клубника фриго стоит «сезон закрыт»: высадка идёт с апреля по июль. Если продаёте");
+L.push("  её и осенью — скажите, поменяю статус.");
+L.push("- 🟡 Написание названий: в списке клиента они капсом, в интерфейсе выводятся с заглавной —");
+L.push("  «Малина ремонтантная «Карамелька»». Если нужно капсом, скажите.");
+L.push("- 🟡 «Вошито» — в реестрах сорт чаще пишут «Уошита» (Ouachita). Оставлено написание клиента.");
+L.push("- 🟡 Голубика: возраст 1,5 / 2 / 3 года указан в описании сорта. Если один и тот же сорт");
+L.push("  продаётся в нескольких возрастах — это разные цены, и правильнее сделать их фасовками");
+L.push("  одной карточки (решение D-16). Нужен список: какой сорт в каких возрастах.");
+L.push("- ⚪ Опылители: голубике и ежевике перекрёстное опыление не обязательно, но урожай выше.");
+L.push("  Если нужна подсказка «берите вместе» — пришлите пары сортов.");
+L.push("");
+L.push("## Фотографии");
+L.push("");
+L.push("Сейчас у всех сортов стоят примеры-заглушки с подписью «пример фото»");
+L.push("(`node Seedlings/scripts/photo-samples.mjs`). Настоящие снимки кладутся в");
+L.push("`Seedlings/assets/photos/<Раздел>/<Сорт>/` и разбираются командой");
+L.push("`node Seedlings/scripts/photo-intake.mjs` — она обрежет их до 4:5, ужмёт");
+L.push("и подменит примеры.");
+L.push("");
+
+fs.writeFileSync(out, L.join("\n"));
+console.log(`Готово: ${path.relative(process.cwd(), out)}, разделов ${CULTURES.length}, сортов ${products.length}`);

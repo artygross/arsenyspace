@@ -263,7 +263,7 @@ function SearchSheet({ onClose }: { onClose: () => void }) {
               ref={inputRef}
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder="Сорт, культура — например «ремонтантная малина»"
+              placeholder="Сорт или раздел — например «ремонтантная малина»"
               aria-label="Поисковый запрос"
               className="field border-0 px-0 focus:outline-none"
             />
@@ -286,7 +286,7 @@ function SearchSheet({ onClose }: { onClose: () => void }) {
           )}
           {needle && hints.length === 0 && (
             <p className="text-ink-muted mt-4 px-1 text-sm">
-              Ничего не нашли. Попробуйте «клубника», «ремонтантная», «жимолость».
+              Ничего не нашли. Попробуйте «малина», «ремонтантная», «голубика».
             </p>
           )}
         </div>

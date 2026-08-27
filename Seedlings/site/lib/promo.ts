@@ -21,12 +21,15 @@ export type PromoRule = {
 export const PROMOS: PromoRule[] = [
   {
     code: "ВЕСНА15",
-    title: "−15 % на клубнику",
-    description: "При заказе от 3 упаковок клубники. Суммируется со скидками распродажи.",
+    title: "−15 % на малину",
+    description: "При заказе от 3 саженцев малины — летней, ремонтантной или вперемешку. Суммируется со скидками распродажи.",
     until: "2026-09-30",
     apply: ({ byCulture, packs }) => {
-      const sum = byCulture.strawberry ?? 0;
-      if ((packs.strawberry ?? 0) < 3) return "Нужно минимум 3 упаковки клубники";
+      // Малина — два раздела каталога, для промокода они считаются вместе
+      const keys = Object.keys(byCulture).filter((k) => k.startsWith("raspberry"));
+      const sum = keys.reduce((acc, k) => acc + (byCulture[k] ?? 0), 0);
+      const count = keys.reduce((acc, k) => acc + (packs[k] ?? 0), 0);
+      if (count < 3) return "Нужно минимум 3 саженца малины";
       return { discount: Math.round(sum * 0.15), freeShipping: false };
     },
   },

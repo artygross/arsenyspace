@@ -4,20 +4,26 @@
  * подключается заменой getProducts().
  */
 
+/**
+ * Раздел каталога. У клиента ассортимент делится не по ботанике, а по разделам:
+ * одна культура может стоять в двух («малина ремонтантная» и «малина летняя»),
+ * а тип посадочного материала — часть названия раздела («смородина ЗКС», «клубника фриго»).
+ * Разделы согласованы с клиентом 27 августа 2026 и других не будет (решение D-30).
+ */
 export type Culture =
-  | "strawberry"
-  | "raspberry"
   | "currant"
-  | "gooseberry"
-  | "honeysuckle"
-  | "vegetable"
-  | "flower";
+  | "raspberry-ever"
+  | "raspberry-summer"
+  | "strawberry-frigo"
+  | "strawberry-zks"
+  | "blackberry"
+  | "blueberry";
 
 /** Срок созревания / плодоношения */
 export type Ripening = "early" | "mid" | "late" | "everbearing";
 
 /** Фасовка и корневая система */
-export type Container = "cassette" | "p9" | "pot1l" | "okc";
+export type Container = "cassette" | "p9" | "pot1l" | "okc" | "frigo";
 
 /** Сезонный статус — ядро логики ниши, docs/02-analysis.md §3 */
 export type Availability = "in_stock" | "preorder" | "out_of_season";
@@ -91,74 +97,74 @@ export type CultureMeta = {
 
 export const CULTURES: CultureMeta[] = [
   {
-    key: "strawberry",
-    slug: "klubnika",
-    name: "Клубника",
-    genitive: "клубники",
-    lead: "Садовая земляника с закрытой корневой: ранние, поздние и ремонтантные сорта — ягода с июня до заморозков.",
-    seo: "Рассада клубники из собственного питомника: сорта с закрытой корневой системой, проверенные в средней полосе. Указана зимостойкость, срок созревания и урожайность каждого сорта, отгрузка в день сбора, гарантия приживаемости 14 дней.",
-    fruitHex: "#d8392f",
-    leafHex: "#3f8f4a",
-  },
-  {
-    key: "raspberry",
-    slug: "malina",
-    name: "Малина",
-    genitive: "малины",
-    lead: "Крупноплодные и ремонтантные сорта, в том числе бесшипные — для сбора без перчаток.",
-    seo: "Саженцы малины с закрытой корневой системой: ремонтантные сорта для осеннего урожая и классические летние. Для каждого сорта указаны зимостойкость, урожайность и наличие шипов.",
-    fruitHex: "#c33a63",
-    leafHex: "#3d7f43",
-  },
-  {
     key: "currant",
-    slug: "smorodina",
-    name: "Смородина",
+    slug: "smorodina-zks",
+    name: "Смородина ЗКС",
     genitive: "смородины",
-    lead: "Чёрная, красная и белая. Неприхотливая культура, которая прощает новичку почти всё.",
-    seo: "Саженцы смородины чёрной, красной и белой из питомника. Двухлетние кусты с закрытой корневой системой, зимостойкость до −35 °C.",
+    lead: "Саженцы с закрытой корневой системой: приживаются в любой месяц сезона, потому что корень едет в горшке и не пересыхает.",
+    seo: "Саженцы чёрной смородины с закрытой корневой системой из собственного питомника: Бен Хоупен, Рубен, Титания, Белорусская сладкая. Указаны зимостойкость, урожайность и размер ягоды каждого сорта.",
     fruitHex: "#3b2b52",
     leafHex: "#4a8a3f",
   },
   {
-    key: "gooseberry",
-    slug: "kryzhovnik",
-    name: "Крыжовник",
-    genitive: "крыжовника",
-    lead: "Бесшипные и слабошиповатые сорта с крупной сладкой ягодой.",
-    seo: "Саженцы крыжовника, включая бесшипные сорта. Закрытая корневая система, зимостойкость до −30 °C, устойчивость к мучнистой росе.",
-    fruitHex: "#7fa93c",
-    leafHex: "#43873d",
+    key: "raspberry-ever",
+    slug: "malina-remontantnaya",
+    name: "Малина ремонтантная",
+    genitive: "ремонтантной малины",
+    lead: "Плодоносит на побегах этого года, с августа до морозов. Осенью куст срезается под ноль — ни подвязки, ни зимовки побегов.",
+    seo: "Саженцы ремонтантной малины: Карамелька, Полька, Джоан Джей, Зюгана и ещё девять сортов. Закрытая корневая система, урожай с августа до заморозков, зимостойкость до −32 °C.",
+    fruitHex: "#c33a63",
+    leafHex: "#3d7f43",
   },
   {
-    key: "honeysuckle",
-    slug: "zhimolost",
-    name: "Жимолость",
-    genitive: "жимолости",
-    lead: "Самая ранняя ягода в саду — созревает раньше клубники, в начале июня.",
-    seo: "Саженцы съедобной жимолости: крупноплодные сорта сибирской селекции, зимостойкость до −40 °C. Для урожая нужны минимум два разных сорта — опылители подобраны в каталоге.",
-    fruitHex: "#4a5fa8",
+    key: "raspberry-summer",
+    slug: "malina-letnyaya",
+    name: "Малина летняя",
+    genitive: "летней малины",
+    lead: "Урожай на прошлогодних побегах — с конца июня до конца июля. Ягода крупнее и слаще ремонтантной, но побеги нужно сохранить до весны.",
+    seo: "Саженцы летней малины: Соколица, Лячка, Глен Ампл, Октавия и другие сорта. Крупная ягода, урожай с конца июня, закрытая корневая система.",
+    fruitHex: "#b8324f",
+    leafHex: "#3d7f43",
+  },
+  {
+    key: "strawberry-frigo",
+    slug: "klubnika-frigo",
+    name: "Клубника тип «фриго»",
+    genitive: "клубники фриго",
+    lead: "Рассада, выкопанная в состоянии покоя и хранящаяся при −1 °C. Высаживается партиями с апреля по июль, ягода — через 8–9 недель после посадки.",
+    seo: "Клубника фриго из питомника: охлаждённая рассада сортов Мальвина и Клери. Высадка партиями с апреля по июль, первый урожай через два месяца после посадки.",
+    fruitHex: "#d8392f",
+    leafHex: "#3f8f4a",
+  },
+  {
+    key: "strawberry-zks",
+    slug: "klubnika-zks",
+    name: "Клубника ЗКС",
+    genitive: "клубники",
+    lead: "Рассада в кассетах с торфяным комом: высаживается весь сезон, включая август — лучший месяц для закладки урожая будущего года.",
+    seo: "Рассада клубники с закрытой корневой системой: сорта Априка и Прими в кассетах. Высадка с апреля по сентябрь, гарантия приживаемости 14 дней.",
+    fruitHex: "#d8392f",
+    leafHex: "#3f8f4a",
+  },
+  {
+    key: "blackberry",
+    slug: "ezhevika",
+    name: "Ежевика крупноплодная",
+    genitive: "ежевики",
+    lead: "Ягода до 20 г и урожай до 9 кг с куста. Требует пригибания на зиму — взамен даёт больше любой другой ягоды на том же метре грядки.",
+    seo: "Саженцы крупноплодной ежевики Карака Блэк и Вошито с закрытой корневой системой. Ягода до 20 г, урожайность до 9 кг с куста, инструкция по укрытию на зиму.",
+    fruitHex: "#2f2740",
+    leafHex: "#3f7f45",
+  },
+  {
+    key: "blueberry",
+    slug: "golubika",
+    name: "Голубика 1,5–3 года",
+    genitive: "голубики",
+    lead: "Подрощенные кусты: чем старше саженец, тем ближе первый полноценный урожай. Нужен кислый торфяной грунт — без него голубика не растёт.",
+    seo: "Саженцы садовой голубики Дюк, Блюкроп и Сиерра возрастом от 1,5 до 3 лет. Закрытая корневая система, зимостойкость до −34 °C, памятка по кислому грунту.",
+    fruitHex: "#4a6fb0",
     leafHex: "#4f8c4a",
-  },
-  {
-    key: "vegetable",
-    slug: "ovoshchnaya-rassada",
-    name: "Овощная рассада",
-    genitive: "овощной рассады",
-    lead: "Томаты, перец, огурец, капуста и баклажан в кассетах — крепкая рассада без вытягивания.",
-    seo: "Овощная рассада из питомника: томаты, перцы, огурцы, капуста, баклажаны. Выращена в кассетах при досветке, закалённая, готова к высадке в грунт и теплицу.",
-    fruitHex: "#d8442c",
-    leafHex: "#3e8a45",
-  },
-  {
-    key: "flower",
-    slug: "tsvety",
-    name: "Цветочная рассада",
-    genitive: "цветочной рассады",
-    lead: "Однолетники для клумб и балконных ящиков плюс многолетники, которые высаживают в конце лета.",
-    seo: "Цветочная рассада: петуния, бархатцы, виола, лаванда, флоксы. Растения в кассетах и горшках P9, цветение в год посадки.",
-    fruitHex: "#b45ba8",
-    leafHex: "#4d8f4e",
   },
 ];
 
@@ -179,13 +185,15 @@ export const CONTAINER_LABEL: Record<Container, string> = {
   p9: "Горшок P9",
   pot1l: "Горшок 1 л",
   okc: "Открытая корневая",
+  frigo: "Рассада фриго",
 };
 
 export const CONTAINER_HINT: Record<Container, string> = {
   cassette: "Кассета с торфяным комом — высадка без пересадочного стресса",
   p9: "Горшок 9×9 см, закрытая корневая система",
-  pot1l: "Горшок 1 л, растение второго года",
+  pot1l: "Горшок 1 л, закрытая корневая система",
   okc: "Открытая корневая система, отгрузка только в посадочное окно",
+  frigo: "Охлаждённая рассада с открытой корневой: хранится при −1 °C и высаживается партиями с апреля по июль",
 };
 
 export const AVAILABILITY_LABEL: Record<Availability, string> = {
@@ -254,120 +262,100 @@ type Raw = {
 };
 
 const CATALOG_RAW: Record<Culture, Raw[]> = {
-  strawberry: [
-    { name: "Полка", kind: "Садовая", ripening: "mid", hardiness: -22, yieldPerBush: "0,8–1,2 кг", fruitSize: "25–35 г", height: "25 см", price: 390, oldPrice: 460, packSize: 5, container: "cassette", short: "Эталон вкуса: плотная сладкая ягода, которая не течёт в корзине", hit: true },
-    { name: "Альбион", kind: "Ремонтантная", ripening: "everbearing", hardiness: -20, yieldPerBush: "1,2–1,6 кг", fruitSize: "30–50 г", height: "30 см", price: 450, packSize: 5, container: "cassette", short: "Плодоносит волнами с июня до октября, ягода конической формы", hit: true },
-    { name: "Зенга Зенгана", kind: "Садовая", ripening: "late", hardiness: -24, yieldPerBush: "0,7–1 кг", fruitSize: "20–30 г", height: "25 см", price: 340, packSize: 5, container: "cassette", short: "Классика для варенья и заморозки: ягода тёмная, ароматная" },
-    { name: "Хоней", kind: "Садовая", ripening: "early", hardiness: -22, yieldPerBush: "0,8–1,1 кг", fruitSize: "30–40 г", height: "28 см", price: 400, packSize: 5, container: "cassette", short: "Самая ранняя в нашем питомнике — ягода в первой декаде июня" },
-    { name: "Мальвина", kind: "Садовая", ripening: "late", hardiness: -23, yieldPerBush: "0,9–1,2 кг", fruitSize: "35–45 г", height: "30 см", price: 470, packSize: 5, container: "cassette", short: "Закрывает сезон в июле, когда у соседей клубника уже отошла", new: true },
-    { name: "Клери", kind: "Садовая", ripening: "early", hardiness: -20, yieldPerBush: "0,7–0,9 кг", fruitSize: "25–40 г", height: "25 см", price: 420, packSize: 5, container: "cassette", short: "Глянцевая ягода с плотной мякотью, хорошо переносит перевозку" },
-    { name: "Гигантелла Максим", kind: "Крупноплодная", ripening: "mid", hardiness: -21, yieldPerBush: "1–1,5 кг", fruitSize: "60–90 г", height: "40 см", price: 520, oldPrice: 590, packSize: 5, container: "p9", short: "Ягода размером с яблоко — то, ради чего клубнику показывают гостям" },
-    { name: "Монтерей", kind: "Ремонтантная", ripening: "everbearing", hardiness: -20, yieldPerBush: "1,3–1,7 кг", fruitSize: "30–45 г", height: "32 см", price: 480, packSize: 5, container: "cassette", short: "Даёт четыре волны за сезон, вкус слаще Альбиона" },
-    { name: "Азия", kind: "Крупноплодная", ripening: "mid", hardiness: -22, yieldPerBush: "1–1,3 кг", fruitSize: "40–60 г", height: "30 см", price: 460, packSize: 5, container: "cassette", short: "Итальянский сорт с земляничным ароматом и крепкой мякотью" },
-    { name: "Эльсанта", kind: "Садовая", ripening: "mid", hardiness: -18, yieldPerBush: "0,9–1,2 кг", fruitSize: "30–45 г", height: "28 см", price: 410, packSize: 5, container: "cassette", short: "Промышленный стандарт: ровная ягода, дружная отдача урожая" },
-    { name: "Сан Андреас", kind: "Ремонтантная", ripening: "everbearing", hardiness: -19, yieldPerBush: "1,1–1,5 кг", fruitSize: "35–50 г", height: "30 см", price: 490, packSize: 5, container: "p9", short: "Держит жару лучше других ремонтантных — не мельчает в июле", new: true },
-    { name: "Лорд", kind: "Садовая", ripening: "late", hardiness: -25, yieldPerBush: "1–1,4 кг", fruitSize: "40–60 г", height: "35 см", price: 380, packSize: 5, container: "cassette", short: "Живёт на грядке до 8 лет без пересадки, прощает ошибки ухода" },
-  ],
-  raspberry: [
-    { name: "Полка", kind: "Ремонтантная", ripening: "everbearing", hardiness: -25, yieldPerBush: "3–4 кг", fruitSize: "6–8 г", height: "1,6 м", price: 490, oldPrice: 560, packSize: 2, container: "p9", availability: "preorder", short: "Ремонтантный лидер: плодоносит с августа до морозов", hit: true },
-    { name: "Геракл", kind: "Ремонтантная", ripening: "everbearing", hardiness: -30, yieldPerBush: "2,5–3,5 кг", fruitSize: "6–10 г", height: "1,8 м", price: 440, packSize: 2, container: "p9", availability: "preorder", short: "Мощный куст, не нуждается в шпалере, ягода кисло-сладкая" },
-    { name: "Карамелька", kind: "Ремонтантная", ripening: "everbearing", hardiness: -28, yieldPerBush: "3–4,5 кг", fruitSize: "8–12 г", height: "1,5 м", price: 520, packSize: 2, container: "p9", availability: "preorder", short: "Самая сладкая в подборке — дети обрывают куст до сбора", hit: true },
-    { name: "Гусар", kind: "Крупноплодная", ripening: "mid", hardiness: -32, yieldPerBush: "3–4 кг", fruitSize: "4–6 г", height: "2,2 м", price: 380, packSize: 2, container: "okc", availability: "preorder", short: "Почти без шипов и без капризов: сорт для тех, кто редко на даче" },
-    { name: "Атлант", kind: "Ремонтантная", ripening: "everbearing", hardiness: -30, yieldPerBush: "2,5–3 кг", fruitSize: "7–9 г", height: "1,6 м", price: 470, packSize: 2, container: "p9", availability: "preorder", short: "Ягода снимается сухой — идеальна для заморозки" },
-    { name: "Жёлтый гигант", kind: "Жёлтая", ripening: "mid", hardiness: -30, yieldPerBush: "3–5 кг", fruitSize: "6–8 г", height: "2 м", price: 510, packSize: 2, container: "p9", availability: "preorder", short: "Жёлтая малина без кислоты — не вызывает аллергии у детей", new: true },
-    { name: "Таруса", kind: "Штамбовая", ripening: "mid", hardiness: -30, yieldPerBush: "2–4 кг", fruitSize: "8–12 г", height: "1,5 м", price: 540, packSize: 2, container: "p9", availability: "preorder", short: "Малиновое дерево: прочный ствол, подвязка не нужна" },
-    { name: "Брянское диво", kind: "Ремонтантная", ripening: "everbearing", hardiness: -26, yieldPerBush: "3–4 кг", fruitSize: "10–15 г", height: "1,6 м", price: 560, packSize: 2, container: "p9", availability: "preorder", short: "Самая крупная ягода в каталоге, до 15 г" },
-    { name: "Каскад Делайт", kind: "Крупноплодная", ripening: "late", hardiness: -28, yieldPerBush: "4–6 кг", fruitSize: "8–10 г", height: "2 м", price: 590, packSize: 2, container: "p9", availability: "preorder", short: "Рекордная урожайность при шпалерной подвязке" },
-    { name: "Новость Кузьмина", kind: "Классическая", ripening: "early", hardiness: -35, yieldPerBush: "1,5–2 кг", fruitSize: "3–4 г", height: "2 м", price: 320, packSize: 2, container: "okc", availability: "preorder", short: "Старый русский сорт: вкус из детства и зимостойкость до −35" },
-  ],
   currant: [
-    { name: "Селеченская-2", kind: "Чёрная", ripening: "early", hardiness: -32, yieldPerBush: "3–4,5 кг", fruitSize: "3–5 г", height: "1,5 м", price: 450, packSize: 1, container: "pot1l", short: "Десертный вкус и сладость выше кислоты — едят прямо с куста", hit: true },
-    { name: "Ядрёная", kind: "Чёрная", ripening: "late", hardiness: -35, yieldPerBush: "3–6 кг", fruitSize: "5–8 г", height: "1,7 м", price: 490, oldPrice: 560, packSize: 1, container: "pot1l", short: "Ягода размером с вишню — сибирская селекция" },
-    { name: "Пигмей", kind: "Чёрная", ripening: "mid", hardiness: -33, yieldPerBush: "3–4 кг", fruitSize: "4–7 г", height: "1,5 м", price: 430, packSize: 1, container: "pot1l", short: "Сахара больше 9 %: варенье можно варить с половиной нормы сахара" },
-    { name: "Джонкер ван Тетс", kind: "Красная", ripening: "early", hardiness: -30, yieldPerBush: "4–6 кг", fruitSize: "0,7–1 г", height: "1,8 м", price: 420, packSize: 1, container: "pot1l", short: "Длинные кисти по 10 см — собирать быстро и приятно" },
-    { name: "Розетта", kind: "Красная", ripening: "late", hardiness: -30, yieldPerBush: "3–5 кг", fruitSize: "0,8–1,2 г", height: "1,6 м", price: 440, packSize: 1, container: "pot1l", short: "Висит на кусте до сентября, не осыпаясь" },
-    { name: "Версальская белая", kind: "Белая", ripening: "mid", hardiness: -28, yieldPerBush: "3–4 кг", fruitSize: "0,8–1 г", height: "1,5 м", price: 460, packSize: 1, container: "pot1l", short: "Прозрачная ягода без красящего пигмента — не пачкает руки", new: true },
-    { name: "Экзотика", kind: "Чёрная", ripening: "early", hardiness: -30, yieldPerBush: "2,5–3,5 кг", fruitSize: "4–6 г", height: "1,5 м", price: 470, packSize: 1, container: "pot1l", short: "Ранняя, крупная, с плотной кожицей — хорошо переносит перевозку" },
-    { name: "Багира", kind: "Чёрная", ripening: "mid", hardiness: -34, yieldPerBush: "3,5–4,5 кг", fruitSize: "3–5 г", height: "1,4 м", price: 410, packSize: 1, container: "pot1l", short: "Компактный куст для маленького участка, урожай стабильный" },
+    { name: "Бен Хоупен", kind: "Чёрная", ripening: "mid", hardiness: -32, yieldPerBush: "3–4 кг", fruitSize: "1,2–1,6 г", height: "1,8 м", price: 520, packSize: 1, container: "pot1l", short: "Шотландский сорт с устойчивостью к почковому клещу — главной беде чёрной смородины", hit: true },
+    { name: "Рубен", kind: "Крупноплодная", ripening: "late", hardiness: -30, yieldPerBush: "4–6 кг", fruitSize: "2–3 г", height: "1,7 м", price: 560, oldPrice: 620, packSize: 1, container: "pot1l", short: "Ягода до 3 г и ровная кисть: собирать можно горстью, а не по одной" },
+    { name: "Титания", kind: "Чёрная", ripening: "mid", hardiness: -34, yieldPerBush: "3–5 кг", fruitSize: "1,5–2 г", height: "1,9 м", price: 490, packSize: 1, container: "pot1l", short: "Шведская классика: не берёт мучнистую росу и ржавчину даже в сырое лето", hit: true },
+    { name: "Белорусская сладкая", kind: "Десертная", ripening: "early", hardiness: -35, yieldPerBush: "3–4 кг", fruitSize: "1,2–1,5 г", height: "1,5 м", price: 470, packSize: 1, container: "pot1l", short: "Сахара больше, чем кислоты — эту смородину едят с куста, а не варят", new: true },
+    { name: "Клауссоновская", kind: "Крупноплодная", ripening: "mid", hardiness: -33, yieldPerBush: "3,5–5 кг", fruitSize: "1,8–2,5 г", height: "1,6 м", price: 540, packSize: 1, container: "pot1l", short: "Белорусский сорт с крупной одномерной ягодой и стабильным урожаем в сырое лето", new: true },
   ],
-  gooseberry: [
-    { name: "Командор", kind: "Бесшипный", ripening: "mid", hardiness: -30, yieldPerBush: "5–7 кг", fruitSize: "4–7 г", height: "1,5 м", price: 520, packSize: 1, container: "pot1l", short: "Ни одного шипа и до 7 кг с куста — самый частый выбор", hit: true },
-    { name: "Черносливовый", kind: "Слабошиповатый", ripening: "mid", hardiness: -32, yieldPerBush: "3–5 кг", fruitSize: "4–6 г", height: "1,5 м", price: 480, packSize: 1, container: "pot1l", short: "Тёмная ягода со вкусом сливы, отличное вино и компот" },
-    { name: "Медовый", kind: "Шиповатый", ripening: "mid", hardiness: -30, yieldPerBush: "4–6 кг", fruitSize: "5–6 г", height: "1,6 м", price: 460, oldPrice: 520, packSize: 1, container: "pot1l", short: "Самый сладкий сорт, но с шипами — компромисс за вкус" },
-    { name: "Уральский изумруд", kind: "Слабошиповатый", ripening: "early", hardiness: -35, yieldPerBush: "4–6 кг", fruitSize: "5–8 г", height: "1,4 м", price: 500, packSize: 1, container: "pot1l", short: "Зимостойкость до −35 °C, ягода зелёная и очень крупная" },
-    { name: "Грушенька", kind: "Бесшипный", ripening: "late", hardiness: -33, yieldPerBush: "5–6 кг", fruitSize: "4–5 г", height: "1,3 м", price: 530, packSize: 1, container: "pot1l", short: "Не болеет мучнистой росой, куст компактный и аккуратный", new: true },
+  "raspberry-ever": [
+    { name: "Карамелька", kind: "Десертная", ripening: "everbearing", hardiness: -28, yieldPerBush: "3–4,5 кг", fruitSize: "8–12 г", height: "1,5 м", price: 520, packSize: 1, container: "p9", short: "Самый сладкий сорт раздела: вкус карамели почти без кислинки", hit: true },
+    { name: "Поэмат", kind: "Крупноплодная", ripening: "everbearing", hardiness: -25, yieldPerBush: "3,5–4,5 кг", fruitSize: "8–12 г", height: "1,8 м", price: 540, packSize: 1, container: "p9", short: "Польская новинка: ягода плотная, снимается сухой и не печётся в жару", new: true },
+    { name: "Полька", kind: "Крупноплодная", ripening: "everbearing", hardiness: -25, yieldPerBush: "3–4 кг", fruitSize: "6–8 г", height: "1,6 м", price: 490, oldPrice: 560, packSize: 1, container: "p9", short: "Промышленный стандарт ремонтантной малины: отдаёт урожай с августа до морозов", hit: true },
+    { name: "Полана", kind: "Ранняя", ripening: "everbearing", hardiness: -30, yieldPerBush: "2,5–3,5 кг", fruitSize: "5–7 г", height: "1,5 м", price: 450, packSize: 1, container: "p9", short: "Начинает плодоносить в июле — на три недели раньше Польки" },
+    { name: "Джоан Джей", kind: "Бесшипная", ripening: "everbearing", hardiness: -25, yieldPerBush: "3–4 кг", fruitSize: "7–10 г", height: "1,6 м", price: 530, packSize: 1, container: "p9", short: "Ни одного шипа, ягода сама сходит с плодоложа — сбор вдвое быстрее", hit: true },
+    { name: "Яна", kind: "Десертная", ripening: "everbearing", hardiness: -26, yieldPerBush: "2,5–3,5 кг", fruitSize: "6–9 г", height: "1,7 м", price: 480, packSize: 1, container: "p9", short: "Ягода светло-красная, ароматная, хорошо держит форму в заморозке" },
+    { name: "Нижегородец", kind: "Зимостойкая", ripening: "everbearing", hardiness: -32, yieldPerBush: "2,5–3 кг", fruitSize: "5–8 г", height: "1,6 м", price: 420, packSize: 1, container: "p9", short: "Российская селекция для холодных участков: зимует без пригибания" },
+    { name: "Прималба", kind: "Жёлтая", ripening: "everbearing", hardiness: -24, yieldPerBush: "2–3 кг", fruitSize: "5–7 г", height: "1,5 м", price: 560, packSize: 1, container: "p9", short: "Кремово-белая ягода без кислоты — её едят дети, которым нельзя красное", new: true },
+    { name: "Геракл", kind: "Крупноплодная", ripening: "everbearing", hardiness: -30, yieldPerBush: "2,5–3,5 кг", fruitSize: "6–10 г", height: "1,8 м", price: 440, packSize: 1, container: "p9", short: "Мощный побег держит урожай без шпалеры, вкус кисло-сладкий" },
+    { name: "Мопема", kind: "Крупноплодная", ripening: "everbearing", hardiness: -25, yieldPerBush: "3–4 кг", fruitSize: "7–9 г", height: "1,7 м", price: 500, packSize: 1, container: "p9", short: "Даёт ровную ягоду до заморозков и не мельчает к концу волны" },
+    { name: "Энросандира", kind: "Десертная", ripening: "everbearing", hardiness: -24, yieldPerBush: "3–4,5 кг", fruitSize: "8–11 г", height: "1,8 м", price: 550, packSize: 1, container: "p9", short: "Итальянский сорт с плотной ягодой: лежит в холодильнике неделю", new: true },
+    { name: "Аврора", kind: "Ранняя", ripening: "everbearing", hardiness: -27, yieldPerBush: "2,5–3,5 кг", fruitSize: "6–8 г", height: "1,6 м", price: 470, packSize: 1, container: "p9", short: "Первая волна в середине июля, вторая — в сентябре" },
+    { name: "Зюгана", kind: "Двойного плодоношения", ripening: "everbearing", hardiness: -26, yieldPerBush: "4–5 кг", fruitSize: "7–10 г", height: "2 м", price: 580, packSize: 1, container: "p9", short: "Плодоносит дважды: летом на прошлогодних побегах и осенью на новых", hit: true },
   ],
-  honeysuckle: [
-    { name: "Бакчарский великан", kind: "Крупноплодная", ripening: "early", hardiness: -40, yieldPerBush: "3–4 кг", fruitSize: "1,8–2,5 г", height: "1,9 м", price: 590, packSize: 1, container: "pot1l", short: "Ягода до 4 см длиной — первый урожай сезона, уже в начале июня", hit: true },
-    { name: "Сильгинка", kind: "Десертная", ripening: "early", hardiness: -40, yieldPerBush: "2–3 кг", fruitSize: "1,4–1,8 г", height: "1,5 м", price: 540, packSize: 1, container: "pot1l", short: "Без горечи вообще — сорт для тех, кому жимолость раньше не нравилась" },
-    { name: "Восторг", kind: "Крупноплодная", ripening: "mid", hardiness: -38, yieldPerBush: "3–3,5 кг", fruitSize: "1,6–2,2 г", height: "1,7 м", price: 560, oldPrice: 620, packSize: 1, container: "pot1l", short: "Ягода не осыпается — можно собирать раз в неделю" },
-    { name: "Юголь", kind: "Опылитель", ripening: "mid", hardiness: -40, yieldPerBush: "2,5–3 кг", fruitSize: "1,3–1,7 г", height: "1,6 м", price: 490, packSize: 1, container: "pot1l", short: "Лучший опылитель для Бакчарского великана — берите вместе" },
-    { name: "Дочь великана", kind: "Крупноплодная", ripening: "mid", hardiness: -40, yieldPerBush: "2,5–3,5 кг", fruitSize: "2–2,5 г", height: "1,8 м", price: 610, packSize: 1, container: "pot1l", short: "Самая крупная ягода среди жимолости, вкус сладкий с кислинкой", new: true },
+  "raspberry-summer": [
+    { name: "Соколица", kind: "Крупноплодная", ripening: "early", hardiness: -30, yieldPerBush: "3–4 кг", fruitSize: "6–8 г", height: "1,8 м", price: 450, packSize: 1, container: "p9", short: "Польский ранний сорт: ягода светлая, плотная, почти не осыпается", hit: true },
+    { name: "Гусар", kind: "Слабошиповатая", ripening: "mid", hardiness: -32, yieldPerBush: "3–4 кг", fruitSize: "4–6 г", height: "2,2 м", price: 380, packSize: 1, container: "p9", short: "Почти без шипов и без капризов — сорт для тех, кто редко на даче" },
+    { name: "Лячка", kind: "Крупноплодная", ripening: "early", hardiness: -28, yieldPerBush: "4–5 кг", fruitSize: "8–10 г", height: "2 м", price: 490, packSize: 1, container: "p9", short: "Длинная коническая ягода до 10 г, урожай снимается в три приёма" },
+    { name: "Радзиева", kind: "Десертная", ripening: "early", hardiness: -28, yieldPerBush: "3,5–4,5 кг", fruitSize: "7–9 г", height: "1,9 м", price: 470, packSize: 1, container: "p9", short: "Самая ранняя в разделе: ягода в конце июня, вкус сладкий", new: true },
+    { name: "Пшехиба", kind: "Крупноплодная", ripening: "mid", hardiness: -28, yieldPerBush: "4–5 кг", fruitSize: "8–12 г", height: "2 м", price: 510, packSize: 1, container: "p9", short: "Ягода до 12 г, куст мощный: нужна шпалера, но урожай её окупает" },
+    { name: "Глен Ампл", kind: "Бесшипная", ripening: "mid", hardiness: -26, yieldPerBush: "4–6 кг", fruitSize: "6–9 г", height: "2,5 м", price: 540, oldPrice: 600, packSize: 1, container: "p9", short: "Шотландский бесшипный лидер: рекордная урожайность на шпалере", hit: true },
+    { name: "Октавия", kind: "Поздняя", ripening: "late", hardiness: -27, yieldPerBush: "3,5–5 кг", fruitSize: "7–9 г", height: "2 м", price: 520, packSize: 1, container: "p9", short: "Закрывает летний сезон в конце июля, когда у соседей малина отошла" },
   ],
-  vegetable: [
-    { name: "Бычье сердце", kind: "Томат", ripening: "late", hardiness: 0, yieldPerBush: "4–6 кг", fruitSize: "300–500 г", height: "1,8 м", price: 290, packSize: 6, container: "cassette", availability: "out_of_season", short: "Мясистый салатный томат, классика для теплицы", hit: true },
-    { name: "Черри Ира", kind: "Томат", ripening: "early", hardiness: 0, yieldPerBush: "3–4 кг", fruitSize: "20–25 г", height: "1,6 м", price: 270, packSize: 6, container: "cassette", availability: "out_of_season", short: "Гроздья по 40 ягод, дети едят прямо с куста" },
-    { name: "Санька", kind: "Томат", ripening: "early", hardiness: 0, yieldPerBush: "3–4 кг", fruitSize: "80–100 г", height: "60 см", price: 250, packSize: 6, container: "cassette", availability: "out_of_season", short: "Ультраранний детерминантный сорт для открытого грунта" },
-    { name: "Ратунда", kind: "Перец", ripening: "mid", hardiness: 0, yieldPerBush: "2–3 кг", fruitSize: "100–150 г", height: "70 см", price: 280, packSize: 6, container: "cassette", availability: "out_of_season", short: "Толстостенный сладкий перец для фаршировки и заморозки" },
-    { name: "Джемини F1", kind: "Перец", ripening: "mid", hardiness: 0, yieldPerBush: "3–4 кг", fruitSize: "180–220 г", height: "90 см", price: 320, packSize: 6, container: "cassette", availability: "out_of_season", short: "Гибрид с жёлтым плодом и стенкой 8 мм" },
-    { name: "Кураж F1", kind: "Огурец", ripening: "early", hardiness: 0, yieldPerBush: "5–7 кг", fruitSize: "12–14 см", height: "2 м", price: 260, packSize: 6, container: "cassette", availability: "out_of_season", short: "Партенокарпик: завязи без опыления, урожай в теплице до октября" },
-    { name: "Слава", kind: "Капуста", ripening: "mid", hardiness: 0, yieldPerBush: "3–5 кг", fruitSize: "3–4 кг кочан", height: "50 см", price: 230, packSize: 10, container: "cassette", availability: "out_of_season", short: "Проверенный сорт для квашения, кочан плотный и сочный" },
-    { name: "Алмаз", kind: "Баклажан", ripening: "mid", hardiness: 0, yieldPerBush: "2–3 кг", fruitSize: "150–200 г", height: "60 см", price: 300, packSize: 6, container: "cassette", availability: "out_of_season", short: "Без горечи, плодоносит даже в прохладное лето" },
+  "strawberry-frigo": [
+    { name: "Мальвина", kind: "Поздняя", ripening: "late", hardiness: -23, yieldPerBush: "0,9–1,2 кг", fruitSize: "35–45 г", height: "30 см", price: 750, packSize: 10, container: "frigo", availability: "out_of_season", short: "Самый поздний десертный сорт: ягода идёт в июле, когда у соседей всё отошло" },
+    { name: "Клери", kind: "Ранняя", ripening: "early", hardiness: -20, yieldPerBush: "0,7–0,9 кг", fruitSize: "25–40 г", height: "25 см", price: 720, packSize: 10, container: "frigo", availability: "out_of_season", short: "Глянцевая плотная ягода, которая не мнётся при перевозке", hit: true },
   ],
-  flower: [
-    { name: "Петуния Софистика", kind: "Однолетник", ripening: "everbearing", hardiness: 0, yieldPerBush: "—", fruitSize: "цветок 8–10 см", height: "35 см", price: 220, packSize: 6, container: "cassette", availability: "out_of_season", short: "Крупноцветковая петуния для балконных ящиков, цветёт до заморозков" },
-    { name: "Бархатцы Кармен", kind: "Однолетник", ripening: "early", hardiness: 0, yieldPerBush: "—", fruitSize: "цветок 6 см", height: "30 см", price: 180, packSize: 10, container: "cassette", availability: "out_of_season", short: "Отпугивают нематоду на грядке — сажают между томатами" },
-    { name: "Виола Свисс Джайнтс", kind: "Двулетник", ripening: "early", hardiness: -25, yieldPerBush: "—", fruitSize: "цветок 7 см", height: "20 см", price: 200, packSize: 6, container: "cassette", short: "Высаживают в августе — зацветёт уже в апреле следующего года", hit: true },
-    { name: "Лаванда узколистная", kind: "Многолетник", ripening: "mid", hardiness: -25, yieldPerBush: "—", fruitSize: "соцветие 8 см", height: "50 см", price: 390, oldPrice: 450, packSize: 1, container: "p9", short: "Зимует в средней полосе под укрытием, аромат весь июль" },
-    { name: "Флокс метельчатый Европа", kind: "Многолетник", ripening: "mid", hardiness: -30, yieldPerBush: "—", fruitSize: "соцветие 20 см", height: "80 см", price: 420, packSize: 1, container: "p9", short: "Белые соцветия с малиновым глазком, аромат вечером усиливается" },
-    { name: "Хоста Голубой ангел", kind: "Многолетник", ripening: "mid", hardiness: -35, yieldPerBush: "—", fruitSize: "лист 30 см", height: "70 см", price: 450, packSize: 1, container: "p9", short: "Для тени, где больше ничего не растёт — куст живёт 20 лет", new: true },
+  "strawberry-zks": [
+    { name: "Априка", kind: "Ранняя", ripening: "early", hardiness: -21, yieldPerBush: "0,8–1,1 кг", fruitSize: "30–45 г", height: "28 см", price: 450, packSize: 5, container: "cassette", short: "Итальянская ранняя: ровная блестящая ягода с земляничным ароматом", hit: true },
+    { name: "Прими", kind: "Крупноплодная", ripening: "mid", hardiness: -21, yieldPerBush: "0,9–1,3 кг", fruitSize: "35–50 г", height: "30 см", price: 480, oldPrice: 540, packSize: 5, container: "cassette", short: "Крупная ягода и дружная отдача: с пяти кустов ведро за сезон", new: true },
+  ],
+  blackberry: [
+    { name: "Карака Блэк", kind: "Крупноплодная", ripening: "early", hardiness: -20, yieldPerBush: "5–8 кг", fruitSize: "12–20 г", height: "3 м", price: 690, packSize: 1, container: "pot1l", short: "Ягода до 20 г и 5 см длиной — самая крупная ежевика в питомнике", hit: true },
+    { name: "Вошито", kind: "Бесшипная", ripening: "mid", hardiness: -22, yieldPerBush: "6–9 кг", fruitSize: "8–10 г", height: "2 м", price: 650, packSize: 1, container: "pot1l", short: "Прямостоячие бесшипные побеги: не царапают и почти не требуют шпалеры" },
+  ],
+  blueberry: [
+    { name: "Дюк", kind: "Высокорослая", ripening: "early", hardiness: -32, yieldPerBush: "4–6 кг", fruitSize: "17–20 мм", height: "1,6 м", price: 890, packSize: 1, container: "pot1l", short: "Саженец двух лет. Цветёт поздно, а созревает рано — уходит от возвратных заморозков", hit: true },
+    { name: "Блюкроп", kind: "Высокорослая", ripening: "mid", hardiness: -34, yieldPerBush: "6–9 кг", fruitSize: "18–22 мм", height: "1,9 м", price: 1290, oldPrice: 1450, packSize: 1, container: "pot1l", short: "Трёхлетний куст: мировой стандарт голубики, до 9 кг с растения" },
+    { name: "Сиерра", kind: "Полувысокорослая", ripening: "mid", hardiness: -30, yieldPerBush: "4–6 кг", fruitSize: "18–20 мм", height: "1,8 м", price: 790, packSize: 1, container: "pot1l", short: "Саженец полутора лет, вкус сладкий с ароматом — лучший в свежем виде", new: true },
   ],
 };
 
 /* ---------- Тексты, собираемые из данных ---------- */
 
 const CARE: Record<Culture, string[]> = {
-  strawberry: [
+  currant: [
+    "Сажайте наклонно, под углом 45°, заглубляя корневую шейку на 5–7 см — куст даст новые побеги от земли.",
+    "После посадки обрежьте побеги, оставив 3–4 почки: год потеряете, куст выиграете.",
+    "Смородина любит воду: в июне и июле по два ведра на куст в неделю.",
+    "Каждую осень вырезайте ветви старше четырёх лет — они уже не плодоносят.",
+  ],
+  "raspberry-ever": [
+    "Готовьте траншею 40×40 см, на дно — ведро перегноя и горсть золы.",
+    "Между кустами 70 см, между рядами 1,5 м: загущенная малина болеет.",
+    "Осенью срезайте всю надземную часть под ноль — весь урожай будет на побегах следующего года.",
+    "Мульча из скошенной травы слоем 10 см заменяет половину поливов.",
+  ],
+  "raspberry-summer": [
+    "Сразу ставьте шпалеру: летние сорта плодоносят на прошлогодних побегах, и их нужно сохранить.",
+    "Сразу после сбора вырезайте отплодоносившие стебли под корень — они больше не дадут ягод.",
+    "Оставляйте 6–8 сильных побегов замещения на куст, остальное удаляйте молодым.",
+    "На зиму побеги пригибайте к земле дугой и фиксируйте: под снегом они не вымерзают.",
+  ],
+  "strawberry-frigo": [
+    "Не размораживайте заранее: рассаду достают из холода и высаживают в тот же день.",
+    "Перед посадкой подержите корни в воде 20–30 минут, длинные подрежьте до 10 см.",
+    "Сердечко — строго на уровне почвы; корни расправьте вертикально, не загибая.",
+    "Первые две недели поливайте ежедневно: у фриго нет кома, корню нужно тронуться в рост.",
+  ],
+  "strawberry-zks": [
     "Высаживайте вечером или в пасмурный день, сердечко куста — строго на уровне почвы.",
     "Первые 10 дней поливайте через день, дальше — раз в неделю, но обильно.",
     "Замульчируйте соломой или агроволокном: ягода останется чистой, а земля влажной.",
     "На четвёртый год пересадите на новое место — старая грядка теряет урожай.",
   ],
-  raspberry: [
-    "Готовьте траншею 40×40 см, на дно — ведро перегноя и горсть золы.",
-    "Между кустами 70 см, между рядами 1,5 м — загущенная малина болеет.",
-    "Ремонтантные сорта осенью срезайте под ноль: весь урожай будет на побегах этого года.",
-    "Мульча из скошенной травы слоем 10 см заменяет половину поливов.",
+  blackberry: [
+    "Место солнечное и защищённое от ветра, между кустами 2–2,5 м: ежевика разрастается.",
+    "Шпалера в три яруса — побеги тяжёлые и без опоры ложатся на землю вместе с урожаем.",
+    "Отплодоносившие побеги вырезайте сразу после сбора, оставляя 5–6 молодых.",
+    "На зиму снимите побеги со шпалеры, пригните и укройте — это обязательная работа, не опция.",
   ],
-  currant: [
-    "Сажайте наклонно, под углом 45°, заглубляя корневую шейку на 5–7 см — куст даст новые побеги.",
-    "После посадки обрежьте побеги, оставив 3–4 почки: год потеряете, куст выиграете.",
-    "Смородина любит воду: в июне и июле по 2 ведра на куст в неделю.",
-    "Каждую осень вырезайте ветви старше 4 лет — они уже не плодоносят.",
-  ],
-  gooseberry: [
-    "Место — солнечное и проветриваемое, в тени крыжовник берёт мучнистую росу.",
-    "Заглубление 5 см, после посадки полив 10 л и мульча.",
-    "Первую обрезку делайте на второй год, формируя 10–12 разновозрастных ветвей.",
-    "Весной до распускания почек пролейте куст горячей водой (+70 °C) от вредителей.",
-  ],
-  honeysuckle: [
-    "Сажайте минимум два разных сорта: жимолость самобесплодна, без опылителя урожая не будет.",
-    "Корневую шейку не заглубляйте, приствольный круг замульчируйте.",
-    "Первые три года куст растёт медленно — это норма, урожай выходит на полную с 4-го года.",
-    "Обрезка только санитарная: жимолость не любит сильного вмешательства.",
-  ],
-  vegetable: [
-    "Перед высадкой закалите рассаду: 3–4 дня выносите на воздух, увеличивая время.",
-    "Высаживайте в прогретую до +15 °C почву, лунку пролейте тёплой водой.",
-    "Первую неделю притеняйте от прямого солнца — растение переживает пересадку.",
-    "Подвязку ставьте сразу при посадке, чтобы позже не повредить корни.",
-  ],
-  flower: [
-    "Не заглубляйте корневую шейку — цветочная рассада этого не прощает.",
-    "Первый полив — сразу после посадки, дальше по подсыханию верхнего слоя.",
-    "Прищипните верхушку однолетников после приживания: куст станет пышнее.",
-    "Отцветшие соцветия убирайте — растение переключится на новые бутоны.",
+  blueberry: [
+    "Голубике нужен кислый грунт pH 3,5–5: посадочная яма 60×60 см целиком заполняется верховым торфом.",
+    "Никакого навоза, золы и извести — они поднимают pH, и куст желтеет и встаёт.",
+    "Мульчируйте хвойным опадом или щепой слоем 8–10 см, корень поверхностный и пересыхает первым.",
+    "Подкисляйте поливом раз в месяц: чайная ложка лимонной кислоты на ведро воды.",
   ],
 };
 
@@ -414,13 +402,14 @@ function slugify(culture: Culture, name: string): string {
 }
 
 const PLANTING: Record<Culture, [number, number]> = {
-  strawberry: [4, 9],
-  raspberry: [4, 10],
   currant: [4, 10],
-  gooseberry: [4, 10],
-  honeysuckle: [4, 10],
-  vegetable: [3, 6],
-  flower: [4, 8],
+  "raspberry-ever": [4, 10],
+  "raspberry-summer": [4, 10],
+  // Фриго высаживают партиями с апреля по июль: посаженная позже не успевает отдать урожай
+  "strawberry-frigo": [4, 7],
+  "strawberry-zks": [4, 9],
+  blackberry: [4, 10],
+  blueberry: [4, 10],
 };
 
 const WEIGHT: Record<Container, number> = {
@@ -428,6 +417,7 @@ const WEIGHT: Record<Container, number> = {
   p9: 1.4,
   pot1l: 2.2,
   okc: 0.7,
+  frigo: 0.35,
 };
 
 function describe(raw: Raw, culture: Culture): string {
@@ -440,11 +430,13 @@ function describe(raw: Raw, culture: Culture): string {
     raw.hardiness < 0
       ? `Зимостойкость до ${raw.hardiness} °C — сорт проверен на наших полях в средней полосе.`
       : "Культура теплолюбивая: высаживается после возвратных заморозков, при температуре почвы от +15 °C.";
-  // Подтип авторский и уже согласован с названием культуры: «клубника — садовая»,
-  // «крыжовник — бесшипный», «овощная рассада — томат». Собирать через родительный падеж нельзя.
-  // Если подтип уже назвал срок («ремонтантная»), второй раз про него не пишем.
+  // Подтип авторский и уже согласован с названием раздела: «смородина ЗКС — чёрная»,
+  // «малина летняя — бесшипная». Собирать через родительный падеж нельзя.
+  // Если подтип уже назвал срок («Ранняя», «Поздняя»), второй раз про него не пишем.
+  // Сравниваем по основе: «ранний» и «ранняя» — одно и то же слово в разных родах.
   const kind = raw.kind.toLowerCase();
-  const duplicate = kind.startsWith(RIPENING_LABEL[raw.ripening].toLowerCase().slice(0, 7));
+  const stem = RIPENING_LABEL[raw.ripening].toLowerCase().replace(/(ий|ый|ая|ое)$/, "");
+  const duplicate = kind.includes(stem);
   return [
     duplicate
       ? `${c.name} «${raw.name}» — ${kind}. ${raw.short}.`
@@ -489,7 +481,8 @@ function build(culture: Culture, raw: Raw): Product {
     yieldPerBush: raw.yieldPerBush,
     fruitSize: raw.fruitSize,
     height: raw.height,
-    sun: culture === "flower" && raw.name.includes("Хоста") ? "Тень и полутень" : "Солнце, лёгкая полутень",
+    // Голубика в полутени даёт кислую и мелкую ягоду — единственная культура с жёстким требованием
+    sun: culture === "blueberry" ? "Только солнце" : "Солнце, лёгкая полутень",
     plantingWindow: PLANTING[culture],
     weight: WEIGHT[raw.container] * Math.max(1, raw.packSize / 5),
     isNew: Boolean(raw.new),
@@ -532,13 +525,23 @@ export function packLabel(p: Product): string {
   return `${p.packSize} шт. · ${CONTAINER_LABEL[p.container].toLowerCase()}`;
 }
 
+/** Зимостойкость с типографским минусом: в интерфейсе «−28 °C», а не дефис */
+export function hardinessLabel(hardiness: number): string {
+  return `${String(hardiness).replace("-", "\u2212")} °C`;
+}
+
 /** Ключевая характеристика строкой — для карточки в сетке */
 export function keyTrait(p: Product): string {
   const parts = [p.kind];
   const ripening = RIPENING_LABEL[p.ripening].toLowerCase();
-  // «Ремонтантная · ремонтантный» — тип и срок совпадают, второе слово лишнее
-  if (!p.kind.toLowerCase().startsWith(ripening.slice(0, 7))) parts.push(ripening);
-  if (p.hardiness < 0) parts.push(`до ${p.hardiness} °C`);
+  const stem = ripening.replace(/(ий|ый|ая|ое)$/, "");
+  // Срок не повторяем, если его уже назвал тип сорта («Ранняя») или сам раздел
+  // («Малина ремонтантная»): иначе на карточке трижды одно и то же слово.
+  const named =
+    p.kind.toLowerCase().includes(stem) ||
+    (CULTURE_BY_KEY.get(p.culture)?.name.toLowerCase().includes(stem) ?? false);
+  if (!named) parts.push(ripening);
+  if (p.hardiness < 0) parts.push(`до ${hardinessLabel(p.hardiness)}`);
   return parts.join(" · ");
 }
 

@@ -2,8 +2,8 @@ import { CULTURE_BY_KEY, type Container, type Culture, type Product } from "@/li
 
 /**
  * Параметрическая иллюстрация товара — решение D-13.
- * Фотоконтента у клиента пока нет; картинка собирается из модели товара,
- * поэтому она физически не может разойтись с данными: культура задаёт растение,
+ * Рисуется, пока у сорта нет фотографии; картинка собирается из модели товара,
+ * поэтому она физически не может разойтись с данными: раздел задаёт форму и цвет ягоды,
  * фасовка — тару, хэш слага — небольшие вариации формы.
  */
 
@@ -57,7 +57,7 @@ function Pot({ container, hex }: { container: Container; hex: string }) {
 }
 
 function Berry({ x, y, r, hex, kind }: { x: number; y: number; r: number; hex: string; kind: Culture }) {
-  if (kind === "strawberry") {
+  if (kind.startsWith("strawberry")) {
     // Круглая «щека» сверху и остриё снизу — иначе ягода читается как перец
     return (
       <g>
@@ -73,7 +73,7 @@ function Berry({ x, y, r, hex, kind }: { x: number; y: number; r: number; hex: s
       </g>
     );
   }
-  if (kind === "raspberry") {
+  if (kind.startsWith("raspberry")) {
     return (
       <g fill={hex}>
         {[[0, 0], [-r * 0.7, r * 0.5], [r * 0.7, r * 0.5], [0, r]].map(([dx, dy], i) => (
@@ -82,8 +82,30 @@ function Berry({ x, y, r, hex, kind }: { x: number; y: number; r: number; hex: s
       </g>
     );
   }
-  if (kind === "honeysuckle") {
-    return <ellipse cx={x} cy={y} rx={r * 0.6} ry={r * 1.25} fill={hex} />;
+  if (kind === "blackberry") {
+    // Та же костянка, что у малины, но вытянутая: ежевичная ягода длиннее и уже
+    return (
+      <g fill={hex}>
+        {[[0, 0], [-r * 0.6, r * 0.55], [r * 0.6, r * 0.55], [0, r * 1.1], [0, r * 1.65]].map(
+          ([dx, dy], i) => (
+            <circle key={i} cx={x + dx} cy={y + dy} r={r * 0.55} />
+          ),
+        )}
+      </g>
+    );
+  }
+  if (kind === "blueberry") {
+    // Голубика: шарик с «короной» из чашелистиков сверху — по ней её и узнают
+    return (
+      <g fill={hex}>
+        <circle cx={x} cy={y} r={r} />
+        <path
+          d={`M${x - r * 0.45} ${y - r * 0.75} l${r * 0.45} ${r * 0.3} l${r * 0.45} -${r * 0.3} l-${r * 0.2} ${r * 0.55} h-${r * 0.5} z`}
+          fill="#2b3d63"
+          opacity="0.7"
+        />
+      </g>
+    );
   }
   return <circle cx={x} cy={y} r={r} fill={hex} />;
 }
@@ -123,50 +145,26 @@ export function PlantArt({
         : { role: "img", "aria-label": `${meta.name} «${product.name}» — иллюстрация` })}
     >
       <g transform={`rotate(${tilt} 100 180)`}>
-        {product.culture === "flower" ? (
-          <g>
-            <path d="M100 176 V120" stroke={leaf} strokeWidth="5" strokeLinecap="round" />
-            <Leaf x={100} y={150} angle={200} size={22} hex={leaf} />
-            <Leaf x={100} y={158} angle={-20} size={20} hex={leaf} />
-            {[0, 60, 120, 180, 240, 300].map((a) => (
-              <ellipse key={a} cx="100" cy="98" rx="10" ry="20" fill={fruit} transform={`rotate(${a} 100 118)`} opacity="0.9" />
+        <g>
+          <path d="M100 176 V96" stroke={leaf} strokeWidth="5" strokeLinecap="round" />
+          <path d="M100 140 q-26 -10 -34 -34" stroke={leaf} strokeWidth="4" fill="none" strokeLinecap="round" />
+          <path d="M100 128 q26 -12 34 -36" stroke={leaf} strokeWidth="4" fill="none" strokeLinecap="round" />
+          <Leaf x={64} y={104} angle={210} size={26} hex={leaf} />
+          <Leaf x={136} y={90} angle={-30} size={26} hex={leaf} />
+          <Leaf x={100} y={150} angle={200} size={24} hex={leaf} />
+          <Leaf x={100} y={158} angle={-20} size={22} hex={leaf} />
+          <Leaf x={100} y={96} angle={-90} size={22} hex={leaf} />
+          {[
+            [76, 132, 9],
+            [124, 120, 10],
+            [104, 152, 8],
+            [88, 112, 7],
+          ]
+            .slice(0, 2 + (seed % 3))
+            .map(([x, y, r], i) => (
+              <Berry key={i} x={x} y={y} r={r} hex={fruit} kind={product.culture} />
             ))}
-            <circle cx="100" cy="118" r="11" fill="#e8c33d" />
-          </g>
-        ) : product.culture === "vegetable" ? (
-          <g>
-            {[62, 100, 138].map((x, i) => (
-              <g key={x}>
-                <path d={`M${x} 178 V${132 - i * 4}`} stroke={leaf} strokeWidth="4" strokeLinecap="round" />
-                <Leaf x={x} y={148 - i * 3} angle={195} size={17} hex={leaf} />
-                <Leaf x={x} y={152 - i * 3} angle={-15} size={15} hex={leaf} />
-                <Leaf x={x} y={134 - i * 4} angle={250} size={13} hex={leaf} />
-                <Leaf x={x} y={134 - i * 4} angle={-70} size={13} hex={leaf} />
-              </g>
-            ))}
-          </g>
-        ) : (
-          <g>
-            <path d="M100 176 V96" stroke={leaf} strokeWidth="5" strokeLinecap="round" />
-            <path d="M100 140 q-26 -10 -34 -34" stroke={leaf} strokeWidth="4" fill="none" strokeLinecap="round" />
-            <path d="M100 128 q26 -12 34 -36" stroke={leaf} strokeWidth="4" fill="none" strokeLinecap="round" />
-            <Leaf x={64} y={104} angle={210} size={26} hex={leaf} />
-            <Leaf x={136} y={90} angle={-30} size={26} hex={leaf} />
-            <Leaf x={100} y={150} angle={200} size={24} hex={leaf} />
-            <Leaf x={100} y={158} angle={-20} size={22} hex={leaf} />
-            <Leaf x={100} y={96} angle={-90} size={22} hex={leaf} />
-            {[
-              [76, 132, 9],
-              [124, 120, 10],
-              [104, 152, 8],
-              [88, 112, 7],
-            ]
-              .slice(0, 2 + (seed % 3))
-              .map(([x, y, r], i) => (
-                <Berry key={i} x={x} y={y} r={r} hex={fruit} kind={product.culture} />
-              ))}
-          </g>
-        )}
+        </g>
         <Pot container={product.container} hex={fruit} />
       </g>
     </svg>
