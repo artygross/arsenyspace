@@ -27,7 +27,9 @@ export default function DeliveryPage() {
 
       <section className="mt-10">
         <SectionHeading title="Как проходит заказ" />
-        <div className="grid gap-4 md:grid-cols-3">
+        {/* Шагов брони четыре: в сетке на три колонки последний оставался один в ряду
+            и рядом с ним зияла пустая ячейка. Два в ряд — карточки крупнее и ряд полный */}
+        <div className="grid gap-4 sm:grid-cols-2">
           {DELIVERY_STEPS.map((s, i) => {
             const Icon = [IconBox, IconClock, IconTruck, IconSnow][i] ?? IconBox;
             return (

@@ -73,9 +73,6 @@ export default function GuaranteePage() {
             растение начинает плодоносить, и разбирать его мы будем так же: по фотографии и с заменой.
           </p>
         </div>
-        <p className="text-ink-muted mt-4 text-sm">
-          Текст оферты и реквизиты юрлица добавим до запуска — docs/09-questions.md.
-        </p>
         <ButtonLink href="/catalog" size="l" className="mt-6">
           Выбрать сорта
         </ButtonLink>

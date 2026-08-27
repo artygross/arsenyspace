@@ -10,7 +10,7 @@ import {
 import { formatPrice } from "@/lib/format";
 import { AddToCartButton, FavoriteButton } from "./add-to-cart";
 import { CompareToggle } from "./compare-toggle";
-import { ProductImage } from "./product-image";
+import { ProductImage, hasPhoto } from "./product-image";
 import { Badge, Price, productBadges } from "./ui";
 
 /** Карточка каталога — спецификация в docs/05-ui-system.md §6 */
@@ -20,7 +20,7 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <article className="card-surface group hover:shadow-lift relative isolate flex flex-col overflow-hidden transition-all duration-150 hover:-translate-y-0.5">
-      <div className="bg-leaf-soft relative">
+      <div className={`relative ${hasPhoto(product) ? "" : "bg-leaf-soft"}`}>
         <Link href={`/product/${product.slug}`} className="block" tabIndex={-1} aria-hidden="true">
           <ProductImage product={product} className="h-44 w-full sm:h-52" decorative />
         </Link>

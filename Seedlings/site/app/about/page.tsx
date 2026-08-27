@@ -80,9 +80,6 @@ export default function AboutPage() {
               </span>
             </li>
           </ul>
-          <p className="text-ink-muted mt-4 text-sm">
-            Реквизиты юрлица подставляются после ответов клиента — docs/09-questions.md.
-          </p>
           <ButtonLink href={COMPANY.vk} variant="secondary" className="mt-4">
             Сообщество ВКонтакте
           </ButtonLink>

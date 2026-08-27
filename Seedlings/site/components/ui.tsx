@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { discountPercent, formatPrice, plural } from "@/lib/format";
 import type { Product } from "@/lib/catalog";
-import { IconBox, IconLeaf, IconShield, IconStar, IconTruck } from "./icons";
+import { IconBox, IconLeaf, IconPlus, IconShield, IconStar, IconTruck } from "./icons";
 
 /* ---------- Кнопки — docs/05-ui-system.md §5 ---------- */
 
@@ -165,10 +165,14 @@ export function SectionHeading({
 }) {
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4 lg:mb-8">
-      <div className="max-w-2xl">
+      {/* Заголовку даём больше ширины, чем тексту под ним: в max-w-2xl длинные заголовки
+          ломались на две строки посреди фразы. Текст остаётся узким — так он читается */}
+      <div className="max-w-3xl">
         {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
-        <h2 className="font-display text-2xl leading-tight font-bold lg:text-4xl">{title}</h2>
-        {text && <p className="text-ink-muted mt-2 leading-relaxed">{text}</p>}
+        <h2 className="font-display text-2xl leading-tight font-bold text-balance lg:text-4xl">
+          {title}
+        </h2>
+        {text && <p className="text-ink-muted mt-2 max-w-2xl leading-relaxed">{text}</p>}
       </div>
       {action && (
         <Link
@@ -237,9 +241,9 @@ export function Faq({ items }: { items: { q: string; a: string }[] }) {
         <details key={item.q} className="group px-5">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-medium">
             {item.q}
-            <span className="bg-leaf-soft text-leaf-deep flex size-7 shrink-0 items-center justify-center rounded-full transition-transform group-open:rotate-45">
-              +
-            </span>
+            {/* Знак нарисован иконкой, а не текстовым «+»: у глифа своя базовая линия,
+                и в круге он всегда сидел чуть выше центра */}
+            <IconPlus className="text-leaf-deep size-6 shrink-0 transition-transform group-open:rotate-45" />
           </summary>
           <p className="text-ink-muted pb-5 leading-relaxed">{item.a}</p>
         </details>

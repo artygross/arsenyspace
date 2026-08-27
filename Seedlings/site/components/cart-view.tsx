@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ProductImage } from "./product-image";
+import { ProductImage, hasPhoto } from "./product-image";
 import { ProductGrid } from "./product-card";
 import { Button, ButtonLink, EmptyState, Price, SectionHeading, TrustBlock } from "./ui";
 import { IconMinus, IconPlus, IconTrash } from "./icons";
@@ -49,10 +49,15 @@ export function CartView() {
       </h1>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_360px] lg:gap-8">
-        <ul className="grid gap-3">
+        {/* items-start: список — колонка внешней сетки и растягивается по высоте правого блока
+            с итогами. Без этого одна позиция в корзине раздувалась на всю его высоту */}
+        <ul className="grid items-start gap-3">
           {items.map(({ product, qty }) => (
             <li key={product.slug} className="card-surface flex gap-3 p-3 sm:gap-4 sm:p-4">
-              <Link href={`/product/${baseSlug(product.slug)}`} className="bg-leaf-soft shrink-0 rounded-2xl">
+              <Link
+                href={`/product/${baseSlug(product.slug)}`}
+                className={`shrink-0 self-start rounded-2xl ${hasPhoto(product) ? "" : "bg-leaf-soft"}`}
+              >
                 <ProductImage product={product} className="size-24 sm:size-28 rounded-2xl" sizes="112px" decorative />
               </Link>
 

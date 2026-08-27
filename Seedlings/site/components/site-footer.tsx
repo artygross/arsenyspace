@@ -78,8 +78,8 @@ export function SiteFooter() {
           <ul className="grid gap-3 text-sm">
             <li className="flex gap-2">
               <IconPhone className="text-leaf size-5 shrink-0" />
-              <a href="tel:+74872000000" className="hover:text-leaf">
-                +7 (4872) 00-00-00
+              <a href={COMPANY.phoneHref} className="hover:text-leaf">
+                {COMPANY.phone}
               </a>
             </li>
             <li className="flex gap-2">
@@ -97,8 +97,7 @@ export function SiteFooter() {
       <div className="border-line border-t">
         <div className="shell text-ink-muted flex flex-wrap justify-between gap-3 py-5 text-xs">
           <p>
-            © 2026 {COMPANY.legal} · Роскомнадзор № {COMPANY.rkn}. ИНН и ОГРН добавим до запуска
-            (docs/09-questions.md).
+            © 2026 {COMPANY.legal} · Роскомнадзор № {COMPANY.rkn}
           </p>
           <p>
             Демонстрационный прототип: цены и остатки условные. Индексация закрыта.

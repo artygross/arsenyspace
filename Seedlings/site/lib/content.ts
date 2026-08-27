@@ -12,8 +12,8 @@ export const COMPANY = {
   /** Показывать ли название текстом рядом со знаком */
   logoWithWordmark: true,
   legal: "КФХ Полесье",
-  phone: "+7 (000) 000-00-00",
-  phoneHref: "tel:+70000000000",
+  phone: "+7 (921) 643-13-06",
+  phoneHref: "tel:+79216431306",
   email: "zakaz@polesie.example",
   vk: "https://vk.ru/kupit_sazhentsy_maliny_klubniki",
   /** Номер регистрации, присланный клиентом. Что именно им зарегистрировано — уточняется (docs/09) */

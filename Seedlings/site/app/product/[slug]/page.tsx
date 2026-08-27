@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ProductImage } from "@/components/product-image";
+import { ProductImage, hasPhoto } from "@/components/product-image";
 import { ProductPurchase } from "@/components/product-purchase";
 import { ProductReviews } from "@/components/product-reviews";
 import { ProductGrid } from "@/components/product-card";
@@ -83,7 +83,7 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_.9fr] lg:gap-10">
         <div>
-          <div className="bg-leaf-soft relative overflow-hidden rounded-[28px]">
+          <div className={`relative overflow-hidden rounded-[28px] ${hasPhoto(product) ? "" : "bg-leaf-soft"}`}>
             <ProductImage product={product} className="h-72 w-full lg:h-[460px]" sizes="(max-width: 1024px) 100vw, 620px" priority />
             {badges.length > 0 && (
               <div className="absolute top-4 left-4 flex flex-col items-start gap-2">
@@ -95,10 +95,6 @@ export default async function ProductPage(props: PageProps<"/product/[slug]">) {
               </div>
             )}
           </div>
-          <p className="text-ink-muted mt-3 text-sm">
-            Иллюстрация сорта. Фотосъёмку заменим на реальные кадры растения, корневой системы
-            и урожая — см. docs/05-ui-system.md §10.
-          </p>
         </div>
 
         <div>

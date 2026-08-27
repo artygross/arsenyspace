@@ -7,10 +7,18 @@ export function photosOf(product: Product): string[] {
   return PHOTOS[baseSlug(product.slug)] ?? [];
 }
 
+/** Есть ли у сорта фотография — по этому же признаку решается, нужна ли подложка */
+export function hasPhoto(product: Product): boolean {
+  return photosOf(product).length > 0;
+}
+
 /**
  * Изображение товара: фотография, если она есть в /public/photos, иначе
  * параметрическая иллюстрация (решение D-13). Замена фотоконтентом — подстановка файлов,
  * а не переписывание компонентов: см. public/photos/README.md.
+ *
+ * Зелёная подложка нужна только иллюстрации: она рисуется на прозрачном фоне и без подложки
+ * висит в пустоте. Под фотографией та же подложка вылезала цветной полосой по краям кадра.
  */
 export function ProductImage({
   product,

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { ProductImage } from "./product-image";
+import { ProductImage, hasPhoto } from "./product-image";
 import { AddToCartButton } from "./add-to-cart";
 import { EmptyState, Price } from "./ui";
 import { IconClose } from "./icons";
@@ -123,7 +123,7 @@ export function CompareTable() {
                     >
                       <IconClose className="size-4" />
                     </button>
-                    <div className="bg-leaf-soft rounded-xl">
+                    <div className={`rounded-xl ${hasPhoto(p) ? "" : "bg-leaf-soft"}`}>
                       <ProductImage product={p} className="h-28 w-full rounded-xl" sizes="200px" decorative />
                     </div>
                     <p className="eyebrow mt-2">{CULTURE_BY_KEY.get(p.culture)!.name}</p>

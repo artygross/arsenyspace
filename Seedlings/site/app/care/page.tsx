@@ -36,8 +36,8 @@ export default function CarePage() {
         <ul className="grid gap-3 md:grid-cols-2">
           {CALENDAR.map((c) => (
             <li key={c.month} className="card-surface flex gap-4 p-4">
-              <span className="bg-leaf-soft text-leaf-deep flex h-fit rounded-full px-3 py-1 text-sm font-semibold">
-                {MONTHS_IN[c.month - 1]}
+              <span className="bg-leaf-soft text-leaf-deep flex h-fit shrink-0 rounded-full px-3 py-1 text-sm font-semibold">
+                в {MONTHS_IN[c.month - 1]}
               </span>
               <p className="text-sm leading-relaxed">{c.what}</p>
             </li>

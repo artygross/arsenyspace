@@ -87,7 +87,7 @@ export function AccountView() {
           <p className="font-medium">Уведомления о поступлении</p>
           <p className="text-ink-muted mt-2 text-sm leading-relaxed">
             Сюда попадают сорта, на которые вы подписались кнопкой «Сообщить о поступлении»,
-            и подписка на открытие отгрузки. Письма отправляются из очереди — docs/08-integrations.md §4.
+            и подписка на открытие отгрузки. Письмо придёт, когда сорт вернётся в продажу.
           </p>
           <p className="text-ink-muted mt-3 text-sm">В прототипе список не сохраняется.</p>
         </div>

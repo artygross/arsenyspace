@@ -18,7 +18,7 @@ import { ADVANTAGES, COMPANY, DELIVERY_STEPS, FAQ_ITEMS } from "@/lib/content";
 import { ARTICLES } from "@/lib/articles";
 import { COLLECTIONS, collectionItems } from "@/lib/collections";
 import { METHODS, PICKUP } from "@/lib/delivery";
-import { formatPrice } from "@/lib/format";
+import { formatPrice, plural } from "@/lib/format";
 
 export default function HomePage() {
   const month = new Date().getMonth() + 1;
@@ -88,7 +88,7 @@ export default function HomePage() {
         <SectionHeading
           eyebrow="Каталог"
           title="Что у нас растёт"
-          text="Семь направлений, 240 сортов. У каждого сорта указаны зимостойкость, срок созревания и окно посадки."
+          text={`${CULTURES.length} ${plural(CULTURES.length, "раздел", "раздела", "разделов")}, ${products.length} ${plural(products.length, "сорт", "сорта", "сортов")}. У каждого сорта указаны зимостойкость, срок созревания и окно посадки.`}
           action={{ href: "/catalog", label: "Весь каталог" }}
         />
         <ul className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
@@ -193,7 +193,9 @@ export default function HomePage() {
           text="Бронь бесплатна, оплата — при получении. Отправляем в день сбора и не отправляем в мороз: дождёмся окна и предупредим вас."
           action={{ href: "/delivery", label: "Подробно о доставке" }}
         />
-        <div className="grid gap-4 md:grid-cols-3">
+        {/* Шагов брони четыре: в сетке на три колонки последний оставался один в ряду
+            и рядом с ним зияла пустая ячейка. Два в ряд — карточки крупнее и ряд полный */}
+        <div className="grid gap-4 sm:grid-cols-2">
           {DELIVERY_STEPS.map((s, i) => {
             // Шагов брони четыре — иконок должно быть столько же, иначе последний шаг падает
             const StepIcon = [IconLeaf, IconPhone, IconTruck, IconBox][i] ?? IconBox;
